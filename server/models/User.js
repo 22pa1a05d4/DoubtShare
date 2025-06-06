@@ -8,6 +8,11 @@ const userSchema = new mongoose.Schema({
   college: String,
   branch: String,
   semester: Number,
+  profilePhoto: {
+  type: String, // base64 string
+  default: ''
+}
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

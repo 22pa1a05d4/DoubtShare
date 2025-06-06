@@ -1,0 +1,47 @@
+.suggested-users {
+  background-color: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  width: 300px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.suggested-user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #f8f9fa;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.suggested-user-card:hover {
+  transform: translateY(-2px);
+  background-color: #eef1f5;
+}
+
+.suggested-user-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+.suggested-user-card p {
+  margin: 0;
+}
+
+.suggested-user-card p:first-child {
+  font-weight: 600;
+  font-size: 15px;
+  color: #333;
+}
+
+.suggested-user-card p:last-child {
+  font-size: 13px;
+  color: #777;
+}
