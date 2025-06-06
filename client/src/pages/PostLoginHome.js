@@ -165,6 +165,7 @@
 
 
 //final
+
 import React, { useEffect, useState } from 'react';
 import FeedNavbar from '../components/FeedNavbar';
 import './PostLoginHome.css';
@@ -198,6 +199,8 @@ const PostLoginHome = () => {
         const data = await res.json();
         console.log("fetched:", data);
         setUserInfo(data);
+       
+     
       } catch (error) {
         console.error('Error fetching user data:', error);
       }

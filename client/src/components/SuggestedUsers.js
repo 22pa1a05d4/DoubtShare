@@ -29,8 +29,9 @@ const SuggestedUsers = ({ currentUserEmail }) => {
       ) : (
         suggestions.map((user, index) => {
           // Determine the image source
+          
             console.log('User profilePhoto:', user.profilePhoto);
-          const imageSrc = user.profilePhoto
+          const imageSrc = user.profilePhoto && user.profilePhoto.length > 30
             ? user.profilePhoto.startsWith('data:image')
               ? user.profilePhoto
               : `data:image/jpeg;base64,${user.profilePhoto}`

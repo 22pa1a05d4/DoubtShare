@@ -88,7 +88,7 @@ const User = require('../models/User');
 
 // SIGNUP Route
 router.post('/signup', async (req, res) => {
-  const { name, email, password, college, branch, semester } = req.body;
+  const { name, email, password, college, branch, semester ,profilePhoto} = req.body;
   try {
     // Check for duplicate email
     const existingUser = await User.findOne({ email });
@@ -104,7 +104,8 @@ router.post('/signup', async (req, res) => {
       password: hashedPassword,
       college,
       branch,
-      semester
+      semester,
+      profilePhoto
     });
 
     await newUser.save();
@@ -155,7 +156,7 @@ router.get('/profile/:email', async (req, res) => {
 // GET /api/auth/suggestions
 router.get('/all-users', async (req, res) => {
   try {
-    const users = await User.find({}, { password: 0 }); // Exclude password
+    const users = await User.find({}, { password: 0,__v:0 }); // Exclude password
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch users' });
