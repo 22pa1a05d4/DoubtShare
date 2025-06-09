@@ -153,6 +153,32 @@ router.get('/profile/:email', async (req, res) => {
     res.status(500).send(`Error fetching user: ${err.message}`);
   }
 });
+// POST /api/profile/photo/update
+router.post('/profile/photo/update', async (req, res) => {
+  const { email, profilePhoto } = req.body;
+  try {
+    const user = await User.findOneAndUpdate({ email }, { profilePhoto });
+    if (!user) return res.status(404).send('User not found');
+    res.status(200).send('Profile photo updated');
+  } catch (err) {
+    console.error('Update photo error:', err.message);
+    res.status(500).send('Server error while updating photo');
+  }
+});
+
+// POST /api/profile/photo/remove
+router.post('/profile/photo/remove', async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOneAndUpdate({ email }, { profilePhoto: '' });
+    if (!user) return res.status(404).send('User not found');
+    res.status(200).send('Profile photo removed');
+  } catch (err) {
+    console.error('Remove photo error:', err.message);
+    res.status(500).send('Server error while removing photo');
+  }
+});
+
 // GET /api/auth/suggestions
 router.get('/all-users', async (req, res) => {
   try {
