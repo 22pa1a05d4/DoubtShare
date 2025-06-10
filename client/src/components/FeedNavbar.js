@@ -128,11 +128,10 @@
 // export default FeedNavbar;
 
 
-
+ 
 
 import React, { useState, useEffect } from 'react';
 import './FeedNavbar.css';
-
 const FeedNavbar = () => {
   const userEmail = localStorage.getItem('userEmail');
   const defaultAvatar = '/avatar.png';
@@ -140,7 +139,6 @@ const FeedNavbar = () => {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(defaultAvatar);
 
-  // 🔁 Load profile photo from backend
   useEffect(() => {
     const fetchProfilePhoto = async () => {
       try {
@@ -161,7 +159,6 @@ const FeedNavbar = () => {
     if (userEmail) fetchProfilePhoto();
   }, [userEmail]);
 
-  // 📤 Update photo locally + optional future backend upload
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -192,7 +189,6 @@ const FeedNavbar = () => {
     setProfilePhoto(defaultAvatar);
     localStorage.removeItem(`profilePhoto-${userEmail}`);
     setProfileMenuOpen(false);
-
     // Optional: Remove from server
     fetch(`http://localhost:5000/api/profile/photo/remove`, {
       method: 'POST',
@@ -212,7 +208,7 @@ const FeedNavbar = () => {
         <div className="nav-icon">Messaging</div>
         <div className="nav-icon">Notifications</div>
         <div className="nav-icon">My Posts</div>
-
+       
         {/* Profile Photo with Dropdown Menu */}
         <div style={{ position: 'relative' }}>
           <img
