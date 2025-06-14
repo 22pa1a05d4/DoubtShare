@@ -1,0 +1,81 @@
+
+.post-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.post-image {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+}
+
+.post-description {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.4;
+}
+
+/* ─── actions ─── */
+.post-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.post-actions button {
+  background: #eee;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.post-actions .primary {
+  background: #1976d2;
+  color: #fff;
+}
+
+.post-actions button:hover {
+  background: #ccc;
+}
+
+.post-actions .primary:hover {
+  background: #1152a8;
+}
+
+/* ─── reply box ─── */
+.reply-box {
+  margin-top: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.reply-box textarea {
+  flex: 1;
+  resize: vertical;
+  padding: 6px;
+}
+
+.reply-box .small {
+  padding: 6px 10px;
+}
+
+/* ─── comments list ─── */
+.comments {
+  margin-top: 0.75rem;
+  border-top: 1px solid #eee;
+  padding-top: 0.5rem;
+}
+
+.comments p {
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}

@@ -12,6 +12,9 @@ app.use(express.json({ limit: '5mb' })); // ✅ allow up to 5 MB JSON
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
+// serves files like http://localhost:5000/uploads/abc.jpg
+app.use('/uploads', express.static('uploads'));
+
 mongoose.connect('mongodb://127.0.0.1:27017/studentDB', {
   useNewUrlParser: true,
   useUnifiedTopology: true
