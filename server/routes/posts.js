@@ -134,6 +134,23 @@ router.post('/:postId/comment', async (req, res) => {
   }
 });
 
+router.delete('/:id', async (req, res) => {
+  const { id }   = req.params;
+  const { email } = req.body;     // send current user email in body
 
+  try {
+    const post = await Post.findById(id);
+    if (!post) return res.status(404).send('Post not found');
+
+    // Security: only the owner can delete
+    if (post.email !== email) return res.status(403).send('Not your post');
+
+    await post.deleteOne();
+    res.status(200).send('Deleted');
+  } catch (err) {
+    console.error('Delete error', err);
+    res.status(500).send('Failed to delete');
+  }
+});
 
 module.exports = router;

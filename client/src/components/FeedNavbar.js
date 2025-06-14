@@ -131,6 +131,7 @@
  
 
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom'; 
 import './FeedNavbar.css';
 const FeedNavbar = () => {
   const userEmail = localStorage.getItem('userEmail');
@@ -207,7 +208,11 @@ const FeedNavbar = () => {
         <div className="nav-icon">My Network</div>
         <div className="nav-icon">Messaging</div>
         <div className="nav-icon">Notifications</div>
-        <div className="nav-icon">My Posts</div>
+       <div className="nav-icon">
+  <Link to="/my-posts" style={{ textDecoration:'none', color:'inherit' }}>
+    My Posts
+  </Link>
+</div>
        
         {/* Profile Photo with Dropdown Menu */}
         <div style={{ position: 'relative' }}>
