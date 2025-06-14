@@ -991,12 +991,14 @@ const PostLoginHome = () => {
     fd.append('description', newPost.description);
     if (newPost.image) fd.append('image', newPost.image);
     fd.append('email', localStorage.getItem('userEmail'));
-
+  try{
     await fetch('http://localhost:5000/api/posts/create', { method:'POST', body:fd });
     setShowModal(false);
     setNewPost({ description:'', image:null });
-    fetchFeed();
-    fetchMyPosts();
+  }catch(error){
+     console.error('Failed to create post', error);
+    alert('Something went wrong. Try again.');
+  }
   };
 
   return (
