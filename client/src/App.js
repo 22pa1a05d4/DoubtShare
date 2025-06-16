@@ -7,10 +7,10 @@ import PostLoginHome from './pages/PostLoginHome';
 import MyPostsPage    from './pages/MyPostsPage'; 
 import NotificationsPage from './pages/NotificationsPage';
 import MyNetworkPage from './pages/MyNetworkPage';
-
+import ChatListPage from './pages/ChatListPage';
 import SinglePostPage from './pages/SinglePostPage';
 
-
+import ChatPage from './pages/ChatPage';
 
 
 function App() {
@@ -25,6 +25,8 @@ function App() {
         <Route path="/notifications" element={<NotificationsPage />} />
          <Route path="/network" element={<MyNetworkPage />} />
         <Route path="/posts/:postId" element={<SinglePostPage />} />
+        <Route path="/chat/:targetEmail" element={<ChatPage />} />
+<Route path="/chat-list" element={<ChatListPage />} />
       </Routes>
     </Router>
   );

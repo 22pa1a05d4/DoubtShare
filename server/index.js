@@ -5,6 +5,7 @@ require('dotenv').config(); // For accessing environment variables
 const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/posts');
 const notifRoutes = require('./routes/notifications');
+const messageRoutes = require('./routes/messages');
 const User = require('./models/User')
 
 const app = express();
@@ -13,7 +14,7 @@ app.use(express.json({ limit: '5mb' })); // ✅ allow up to 5 MB JSON
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 const profileRoutes = require('./routes/profile');
 app.use('/api/profile', profileRoutes);
-
+app.use('/api/messages', messageRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/notifications', notifRoutes);
