@@ -11,6 +11,9 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '5mb' })); // ✅ allow up to 5 MB JSON
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
+const profileRoutes = require('./routes/profile');
+app.use('/api/profile', profileRoutes);
+
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/notifications', notifRoutes);
