@@ -6,7 +6,7 @@ import Home from './pages/Home';
 import PostLoginHome from './pages/PostLoginHome';
 import MyPostsPage    from './pages/MyPostsPage'; 
 import NotificationsPage from './pages/NotificationsPage';
-
+import MyNetworkPage from './pages/MyNetworkPage';
 
 import SinglePostPage from './pages/SinglePostPage';
 
@@ -23,7 +23,7 @@ function App() {
         <Route path="/hom" element={<PostLoginHome />} />
         <Route path="/my-posts" element={<MyPostsPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
-
+         <Route path="/network" element={<MyNetworkPage />} />
         <Route path="/posts/:postId" element={<SinglePostPage />} />
       </Routes>
     </Router>

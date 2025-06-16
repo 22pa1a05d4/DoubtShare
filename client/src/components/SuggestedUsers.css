@@ -112,3 +112,59 @@
 .dropdown-menu p:hover {
   background-color: #f2f2f2;
 }
+/* container */
+.suggested-user-card{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:6px 4px;
+}
+
+/* avatar */
+.suggested-user-avatar{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  object-fit:cover;
+  flex-shrink:0;
+}
+
+/* user texts */
+.user-info p{
+  margin:0;
+  line-height:1.2;
+}
+.user-info .sub{
+  font-size:12px;
+  color:#777;
+}
+
+/* follow pill */
+.follow-button{
+  margin-left:auto;
+  background:#0a66c2;
+  color:#fff;
+  border:none;
+  font-size:13px;
+  padding:6px 18px;
+  border-radius:20px;
+  cursor:pointer;
+}
+.follow-button:hover{background:#0854a3;}
+.follow-button.following{         /* if you ever show “Following” */
+  background:#e6f0ff;
+  color:#0a66c2;
+  border:1px solid #0a66c2;
+}
+
+/* 3‑dot menu */
+.menu-container{ position:relative; }
+.menu-dots{ cursor:pointer; font-size:20px; user-select:none; }
+.dropdown-menu{
+  position:absolute; right:0; top:25px;
+  background:#fff; border:1px solid #ddd; border-radius:6px;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
+  z-index:5;
+}
+.dropdown-menu p{ margin:0; padding:6px 14px; cursor:pointer; }
+.dropdown-menu p:hover{ background:#f5f7ff; }

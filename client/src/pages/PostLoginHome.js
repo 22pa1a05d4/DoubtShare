@@ -945,6 +945,7 @@ import React, { useEffect, useState } from 'react';
 import FeedNavbar      from '../components/FeedNavbar';
 import SuggestedUsers  from '../components/SuggestedUsers';
 import PostCard        from '../components/PostCard';
+import { Link } from 'react-router-dom';
 import './PostLoginHome.css';
 
 const PostLoginHome = () => {
@@ -1025,7 +1026,10 @@ const PostLoginHome = () => {
             <hr />
             <div className="profile-stats">
               <p>Saved posts</p>
-              <p onClick={fetchMyPosts} style={{cursor:'pointer',color:'grey'}}>My posts</p>
+
+               <Link to="/my-posts"  style={{ textDecoration:'none', color:'#0073b1' }}>
+       My Post
+        </Link>
               <p>Logout</p>
             </div>
           </div>
@@ -1037,9 +1041,9 @@ const PostLoginHome = () => {
 
           {userPosts.length > 0 && (
             <>
-              <h3>My Posts</h3>
-              {userPosts.map(p => <PostCard key={p._id} post={p} />)}
-              <hr style={{margin:'2rem 0'}} />
+              <Link to="/my-posts" className="nav-icon" style={{ textDecoration:'none', color:'inherit' }}>
+        
+        </Link>
             </>
           )}
 

@@ -138,7 +138,21 @@ res.status(200).json({ message: 'Login successful', email: user.email });
     res.status(500).send(`Server error: ${err.message}`);
   }
 });
+router.post('/follow', async (req, res) => {
+  const { currentUserEmail, targetUserEmail } = req.body;
+  if (currentUserEmail === targetUserEmail) return res.sendStatus(400);
 
+  try {
+    await User.updateOne(
+      { email: currentUserEmail },
+      { $addToSet: { following: targetUserEmail } }   // $addToSet avoids duplicates
+    );
+    res.sendStatus(200);
+  } catch (err) {
+    console.error('follow error', err);
+    res.status(500).send('Server error');
+  }
+});
 // GET user profile by email
 router.get('/profile/:email', async (req, res) => {
   const { email } = req.params;
@@ -186,6 +200,26 @@ router.get('/all-users', async (req, res) => {
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+router.get('/following/:email', async (req, res) => {
+  const { email } = req.params;
+  const user = await User.findOne({ email }, 'following');
+  res.json(user?.following || []);
+});
+// POST /api/auth/unfollow
+router.post('/unfollow', async (req, res) => {
+  const { currentUserEmail, targetUserEmail } = req.body;
+
+  try {
+    await User.updateOne(
+      { email: currentUserEmail },
+      { $pull: { following: targetUserEmail } }
+    );
+    res.sendStatus(200);
+  } catch (err) {
+    console.error('unfollow error', err);
+    res.status(500).send('Server error');
   }
 });
 

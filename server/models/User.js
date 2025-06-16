@@ -45,6 +45,10 @@ const UserSchema = new mongoose.Schema(
       type: String,          // base64 string
       default: ''
     },
+     following: {
+      type   : [String],
+      default: []
+    },
     notifications: {
       type: [NotificationSchema],
       default: []

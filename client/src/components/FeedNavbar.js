@@ -552,7 +552,8 @@ const FeedNavbar = () => {
       </div>
 
       <div className="right-section" style={{ display:'flex', gap:'18px', alignItems:'center' }}>
-        <div className="nav-icon">My Network</div>
+        <Link to="/network" className="nav-icon" style={{ textDecoration:'none',color:'inherit' }}>
+   My Network </Link>
         <div className="nav-icon">Messaging</div>
 
         <Link to="/notifications" className="nav-icon" style={{ position:'relative', textDecoration:'none', color:'inherit' }}>
