@@ -2,6 +2,21 @@ const express = require('express');
 const router  = express.Router();
 const User    = require('../models/User');
 
+router.post('/mark-read-one', async (req, res) => {
+  const { email, postId } = req.body;
+
+  try {
+    await User.updateOne(
+      { email, 'notifications.postId': postId },
+      { $set: { 'notifications.$.read': true } }
+    );
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('Failed to mark single notification as read:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 /* GET unread notifications */
 router.get('/:email', async (req, res) => {
   const { email } = req.params;
@@ -30,5 +45,7 @@ router.post('/mark-read/:email', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+// server/routes/notifications.js
+
 
 module.exports = router;

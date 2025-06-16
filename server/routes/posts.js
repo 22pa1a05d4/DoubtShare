@@ -246,6 +246,7 @@ router.post('/:postId/comment', async (req, res) => {
           $push: {
             notifications: {
               message: `${commenterEmail} answered your post`,
+              postId: post._id,   
               read: false,
               createdAt: new Date()
             }
@@ -281,5 +282,17 @@ router.delete('/:id', async (req, res) => {
     res.status(500).send('Failed to delete');
   }
 });
+// routes/posts.js
+router.get('/:id', async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).send('Not found');
+    res.json(post);
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
+
+
 
 module.exports = router;

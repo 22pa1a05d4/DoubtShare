@@ -24,7 +24,8 @@
 const mongoose = require('mongoose');
 const NotificationSchema = new mongoose.Schema(
   {
-    message: String,          // e.g. "alice@gmail.com answered your post"
+    message: String,   
+    postId: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' },     
     read:   { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
   },

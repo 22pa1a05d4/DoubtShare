@@ -5,6 +5,13 @@ import Login from './pages/Login';
 import Home from './pages/Home';
 import PostLoginHome from './pages/PostLoginHome';
 import MyPostsPage    from './pages/MyPostsPage'; 
+import NotificationsPage from './pages/NotificationsPage';
+
+
+import SinglePostPage from './pages/SinglePostPage';
+
+
+
 
 function App() {
   return (
@@ -15,6 +22,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/hom" element={<PostLoginHome />} />
         <Route path="/my-posts" element={<MyPostsPage />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
+
+        <Route path="/posts/:postId" element={<SinglePostPage />} />
       </Routes>
     </Router>
   );
