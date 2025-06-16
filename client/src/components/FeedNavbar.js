@@ -322,7 +322,7 @@ const FeedNavbar = () => {
   useEffect(() => {
     const fetchNotifs = async () => {
       try {
-        const res  = await fetch(`http://localhost:5000/api/auth/notifications/${userEmail}`);
+        const res  = await fetch(`http://localhost:5000/api/notifications/${userEmail}`);
         const data = await res.json();          // expected: ['A answered…', 'B liked…']
         setNotifications(data);
       } catch (err) {
@@ -389,16 +389,25 @@ const FeedNavbar = () => {
           onClick={() => setNotifOpen((v) => !v)}
         >
           Notifications
-          {notifications.length > 0 && (
-            <span className="notif-badge">{notifications.length}</span>
-          )}
-
+          {notifications.filter(n => !n.read).length > 0 && (
+   <span className="notif-badge">
+     {notifications.filter(n => !n.read).length}
+   </span>
+)}
           {notifOpen && (
             <div className="notif-dropdown">
               {notifications.length === 0 ? (
                 <p className="empty">No new notifications</p>
               ) : (
-                notifications.map((n, idx) => <p key={idx}>{n}</p>)
+                notifications.map((n, idx) => (
+   <p key={idx}>
+     {n.message}
+     <br />
+     <small style={{ color:'#888', fontSize:'11px' }}>
+      {new Date(n.createdAt).toLocaleString()}
+     </small>
+   </p>
+ ))
               )}
             </div>
           )}

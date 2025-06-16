@@ -238,6 +238,21 @@ router.post('/:postId/comment', async (req, res) => {
     const comment = { user: commenterEmail, text, createdAt: new Date() };
     post.comments.push(comment);
     await post.save();
+    if (post.email !== commenterEmail) {
+      const User = require('../models/User');
+      await User.updateOne(
+        { email: post.email },
+        {
+          $push: {
+            notifications: {
+              message: `${commenterEmail} answered your post`,
+              read: false,
+              createdAt: new Date()
+            }
+          }
+        }
+      );
+    }
 
     res.status(200).json(comment);   // <- frontend appends this
   } catch (err) {

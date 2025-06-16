@@ -4,6 +4,7 @@ const cors = require('cors');
 require('dotenv').config(); // For accessing environment variables
 const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/posts');
+const notifRoutes = require('./routes/notifications');
 const User = require('./models/User')
 
 const app = express();
@@ -12,6 +13,7 @@ app.use(express.json({ limit: '5mb' })); // ✅ allow up to 5 MB JSON
 app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/notifications', notifRoutes);
 // serves files like http://localhost:5000/uploads/abc.jpg
 app.use('/uploads', express.static('uploads'));
 
