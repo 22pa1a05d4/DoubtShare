@@ -588,17 +588,252 @@
 
 // export default FeedNavbar;
 
+// final
+// import React, { useEffect, useState } from 'react';
+// import { Link } from 'react-router-dom';
+// import './FeedNavbar.css';
+// import ProfilePopup from './ProfilePopup';
+
+// const FeedNavbar = () => {
+//   const userEmail = localStorage.getItem('userEmail');
+//   const defaultAvatar = '/avatar.png';
+//   const [profileOpen, setProfileOpen] = useState(false);
+//   const [profilePhoto, setProfilePhoto] = useState(defaultAvatar);
+//   const [notifs, setNotifs] = useState([]);
+
+//   const [searchResults, setSearchResults] = useState({ users: [], posts: [] });
+//   const [showDropdown, setShowDropdown] = useState(false);
+//    const [popupUser, setPopupUser] = useState(null);
+// const handleShowProfile = async (email) => {
+//   try {
+//     const res = await fetch(`http://localhost:5000/api/auth/profile/${email}`);
+//     const data = await res.json();
+//     setPopupUser(data);
+//   } catch (err) {
+//     console.error('Failed to load user popup:', err);
+//   }
+// };
+
+//   const handleSearch = async (e) => {
+//     const query = e.target.value;
+//     if (!query) {
+//       setSearchResults({ users: [], posts: [] });
+//       setShowDropdown(false);
+//       return;
+//     }
+
+//     try {
+//       const res = await fetch(`http://localhost:5000/api/search/${query}`);
+//       const data = await res.json();
+//       setSearchResults(data);
+//       setShowDropdown(true);
+//     } catch (err) {
+//       console.error('Search error:', err);
+//     }
+//   };
+
+//   const fetchPhoto = async () => {
+//     try {
+//       const res = await fetch(`http://localhost:5000/api/auth/profile/${userEmail}`);
+//       const data = await res.json();
+
+//       if (data.profilePhoto) {
+//         const serverPhoto = data.profilePhoto;
+//         const localPhoto = localStorage.getItem(`profile-${userEmail}`);
+
+//         if (serverPhoto !== localPhoto) {
+//           localStorage.setItem(`profile-${userEmail}`, serverPhoto);
+//           setProfilePhoto(serverPhoto);
+//         } else {
+//           setProfilePhoto(localPhoto || defaultAvatar);
+//         }
+//       } else {
+//         const cached = localStorage.getItem(`profile-${userEmail}`);
+//         if (cached) setProfilePhoto(cached);
+//       }
+//     } catch (err) {
+//       console.error('photo error', err);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (userEmail) fetchPhoto();
+//     const handler = () => fetchPhoto();
+//     window.addEventListener('profile-updated', handler);
+//     return () => window.removeEventListener('profile-updated', handler);
+//   }, [userEmail]);
+
+//   useEffect(() => {
+//     const fetchNotifs = async () => {
+//       try {
+//         const res = await fetch(`http://localhost:5000/api/notifications/${userEmail}`);
+//         const data = await res.json();
+//         setNotifs(data);
+//       } catch (err) {
+//         console.error('notif error', err);
+//       }
+//     };
+
+//     if (userEmail) fetchNotifs();
+//     const handler = () => fetchNotifs();
+//     window.addEventListener('notif-updated', handler);
+//     return () => window.removeEventListener('notif-updated', handler);
+//   }, [userEmail]);
+
+//   const handlePhotoChange = async (e) => {
+//     const file = e.target.files[0];
+//     if (!file) return;
+
+//     const reader = new FileReader();
+//     reader.onloadend = async () => {
+//       const base64 = reader.result;
+
+//       try {
+//         const res = await fetch('http://localhost:5000/api/auth/profile/photo/update', {
+//           method: 'POST',
+//           headers: { 'Content-Type': 'application/json' },
+//           body: JSON.stringify({ email: userEmail, profilePhoto: base64 }),
+//         });
+
+//         if (res.ok) {
+//           localStorage.removeItem(`profile-${userEmail}`);
+//           localStorage.setItem(`profile-${userEmail}`, base64);
+//           setProfilePhoto(base64);
+//           window.dispatchEvent(new Event('profile-updated'));
+//         } else {
+//           console.error('Failed to upload new photo');
+//         }
+//       } catch (err) {
+//         console.error('Upload error:', err);
+//       }
+//     };
+//     reader.readAsDataURL(file);
+//   };
+
+//   const handleRemovePhoto = async () => {
+//     try {
+//       const res = await fetch('http://localhost:5000/api/auth/profile/photo/remove', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ email: userEmail }),
+//       });
+
+//       if (res.ok) {
+//         localStorage.removeItem(`profile-${userEmail}`);
+//         setProfilePhoto(defaultAvatar);
+//         window.dispatchEvent(new Event('profile-updated'));
+//       } else {
+//         console.error('Failed to remove photo');
+//       }
+//     } catch (err) {
+//       console.error('Remove error:', err);
+//     }
+//   };
+
+//   const unread = notifs.filter(n => !n.read).length;
+
+//   return (
+//     <div className="feed-navbar">
+//       <div className="left-section" style={{ position: 'relative' }}>
+//         <input
+//           className="search-input"
+//           type="text"
+//           placeholder="Search posts or users"
+//           onChange={handleSearch}
+//         />
+
+//         {showDropdown && (
+//           <div className="search-dropdown">
+//             {searchResults.users.length === 0 && searchResults.posts.length === 0 ? (
+//               <div className="no-results">No results found</div>
+//             ) : (
+//               <>
+//                 {searchResults.users.length > 0 && (
+//                   <div>
+//                     <div className="dropdown-section-title">Users</div>
+//                     {searchResults.users.map((u) => (
+//                       <div
+//   key={u.email}
+//   className="dropdown-item"
+//   onClick={() => handleShowProfile(u.email)}
+// >
+//   {u.name || u.email}
+// </div>
+
+//                     ))}
+//                   </div>
+                  
+//                 )}
+//                 {searchResults.posts.length > 0 && (
+//                   <div>
+//                     <div className="dropdown-section-title">Posts</div>
+//                     {searchResults.posts.map((p, i) => (
+//                       <div key={i} className="dropdown-item">
+//                         {p.content.slice(0, 50)}...
+//                       </div>
+//                     ))}
+//                   </div>
+//                 )}
+//               </>
+//             )}
+//           </div>
+//         )}
+//       </div>
+
+//       <div className="right-section" style={{ display: 'flex', gap: '18px', alignItems: 'center' }}>
+//         <Link to="/network" className="nav-icon" style={{ textDecoration: 'none', color: 'inherit' }}>
+//           My Network
+//         </Link>
+//         <Link to="/chat-list" className="nav-icon">Messaging</Link>
+//         <Link to="/notifications" className="nav-icon" style={{ position: 'relative', textDecoration: 'none', color: 'inherit' }}>
+//           Notifications
+//           {unread > 0 && <span className="notif-badge">{unread}</span>}
+//         </Link>
+//         <Link to="/my-posts" className="nav-icon" style={{ textDecoration: 'none', color: 'inherit' }}>
+//           My Posts
+//         </Link>
+
+//         <div style={{ position: 'relative' }}>
+//           <img
+//             src={profilePhoto}
+//             alt="profile"
+//             style={{ width: 40, height: 40, borderRadius: '50%', cursor: 'pointer' }}
+//             onClick={() => setProfileOpen(p => !p)}
+//           />
+//           {profileOpen && (
+//             <div className="profile-menu">
+//               <label htmlFor="newPic" className="menu-item">Change Photo</label>
+//               <input id="newPic" type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePhotoChange} />
+//               <button className="remove-btn" onClick={handleRemovePhoto}>Remove Photo</button>
+//             </div>
+//           )}
+//         </div>
+//       </div>
+//       {popupUser && (
+//   <ProfilePopup user={popupUser} onClose={() => setPopupUser(null)} />
+// )}
+
+//     </div>
+//   );
+// };
+
+// export default FeedNavbar;
+
 
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './FeedNavbar.css';
+import ProfilePopup from './ProfilePopup'; // ✅ Make sure it's imported
 
 const FeedNavbar = () => {
   const userEmail = localStorage.getItem('userEmail');
   const defaultAvatar = '/avatar.png';
+
   const [profileOpen, setProfileOpen] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(defaultAvatar);
   const [notifs, setNotifs] = useState([]);
+  const [following, setFollowing] = useState([]);
+  const [popupUser, setPopupUser] = useState(null);
 
   const [searchResults, setSearchResults] = useState({ users: [], posts: [] });
   const [showDropdown, setShowDropdown] = useState(false);
@@ -645,11 +880,53 @@ const FeedNavbar = () => {
     }
   };
 
+  const fetchFollowing = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/auth/following/${userEmail}`);
+      const data = await res.json();
+      setFollowing(data);
+    } catch (err) {
+      console.error('fetch following error:', err);
+    }
+  };
+
+  const handleFollow = async (targetEmail) => {
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/follow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentUserEmail: userEmail,
+          targetUserEmail: targetEmail,
+        }),
+      });
+      if (res.ok) {
+        setFollowing(prev => [...prev, targetEmail]);
+      }
+    } catch (err) {
+      console.error('Follow failed', err);
+    }
+  };
+
+  const handleShowProfile = async (email) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/auth/profile/${email}`);
+      const data = await res.json();
+      setPopupUser(data);
+    } catch (err) {
+      console.error('popup fetch failed:', err);
+    }
+  };
+
   useEffect(() => {
     if (userEmail) fetchPhoto();
     const handler = () => fetchPhoto();
     window.addEventListener('profile-updated', handler);
     return () => window.removeEventListener('profile-updated', handler);
+  }, [userEmail]);
+
+  useEffect(() => {
+    if (userEmail) fetchFollowing();
   }, [userEmail]);
 
   useEffect(() => {
@@ -659,7 +936,7 @@ const FeedNavbar = () => {
         const data = await res.json();
         setNotifs(data);
       } catch (err) {
-        console.error('notif error', err);
+        console.error('notif error:', err);
       }
     };
 
@@ -741,9 +1018,40 @@ const FeedNavbar = () => {
                   <div>
                     <div className="dropdown-section-title">Users</div>
                     {searchResults.users.map((u) => (
-                      <Link key={u.email} to={`/profile/${u.email}`} className="dropdown-item">
-                        {u.name || u.email}
-                      </Link>
+                      <div
+                        key={u.email}
+                        className="dropdown-item"
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center'
+                        }}
+                      >
+                        <span
+                          onClick={() => handleShowProfile(u.email)}
+                          style={{ cursor: 'pointer', flex: 1 }}
+                        >
+                          {u.name || u.email}
+                        </span>
+                        {u.email !== userEmail && (
+                          <button
+                            onClick={() => handleFollow(u.email)}
+                            className="follow-btn"
+                            style={{
+                              marginLeft: '10px',
+                              padding: '5px 10px',
+                              backgroundColor: following.includes(u.email) ? '#ccc' : '#007bff',
+                              color: following.includes(u.email) ? '#333' : '#fff',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: following.includes(u.email) ? 'default' : 'pointer'
+                            }}
+                            disabled={following.includes(u.email)}
+                          >
+                            {following.includes(u.email) ? 'Following' : 'Follow'}
+                          </button>
+                        )}
+                      </div>
                     ))}
                   </div>
                 )}
@@ -792,6 +1100,11 @@ const FeedNavbar = () => {
           )}
         </div>
       </div>
+
+      {/* ✅ Show profile popup when clicked */}
+      {popupUser && (
+        <ProfilePopup user={popupUser} onClose={() => setPopupUser(null)} />
+      )}
     </div>
   );
 };

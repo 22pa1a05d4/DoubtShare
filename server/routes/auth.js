@@ -160,13 +160,18 @@ router.get('/profile/:email', async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).send('User not found');
 
-    const { name, college, branch,profilePhoto } = user;
-    res.status(200).json({ name, college, branch,profilePhoto });
+    const { name, college, branch, profilePhoto } = user;
+    const [firstName, ...rest] = name.split(' ');
+    const lastName = rest.join(' ');
+
+    res.status(200).json({ firstName, lastName, college, branch, profilePhoto });
   } catch (err) {
     console.error('Profile Fetch Error:', err.message);
     res.status(500).send(`Error fetching user: ${err.message}`);
   }
 });
+
+
 // POST /api/profile/photo/update
 router.post('/profile/photo/update', async (req, res) => {
   const { email, profilePhoto } = req.body;
@@ -196,12 +201,25 @@ router.post('/profile/photo/remove', async (req, res) => {
 // GET /api/auth/suggestions
 router.get('/all-users', async (req, res) => {
   try {
-    const users = await User.find({}, { password: 0,__v:0 }); // Exclude password
-    res.json(users);
+    const users = await User.find({}, { name: 1, email: 1, profilePhoto: 1 });
+
+    const result = users.map(u => {
+      const [firstName, ...rest] = u.name.split(' ');
+      const lastName = rest.join(' ');
+      return {
+        email: u.email,
+        profilePhoto: u.profilePhoto,
+        firstName,
+        lastName
+      };
+    });
+
+    res.json(result);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch users' });
   }
 });
+
 router.get('/following/:email', async (req, res) => {
   const { email } = req.params;
   const user = await User.findOne({ email }, 'following');

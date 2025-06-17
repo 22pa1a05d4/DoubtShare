@@ -1,0 +1,63 @@
+/* ProfilePopup.css */
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3); /* soft dark backdrop */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.profile-popup {
+  background: #fff;
+  padding: 25px 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  max-width: 320px;
+  width: 90%;
+  text-align: center;
+  animation: popupFade 0.3s ease-in-out;
+  position: relative;
+}
+
+@keyframes popupFade {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.popup-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #0077b6; /* classy border */
+  margin-bottom: 15px;
+}
+
+.profile-popup h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #333;
+  font-weight: 600;
+}
+
+.profile-popup p {
+  margin: 8px 0;
+  font-size: 15px;
+  color: #555;
+}
+
+.profile-popup p strong {
+  color: #000;
+}
