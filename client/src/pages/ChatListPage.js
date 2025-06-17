@@ -160,21 +160,35 @@ const ChatListPage = () => {
     const data = await res.json();
     setMessages(data);
   };
-
   useEffect(() => {
-    const fetchChats = async () => {
-      const res = await fetch('http://localhost:5000/api/auth/all-users');
-      const data = await res.json();
-      const otherUsers = data.filter(user => user.email !== myEmail);
-      setChats(otherUsers);
+  const fetchChats = async () => {
+    const res = await fetch(`http://localhost:5000/api/messages/chats/${myEmail}`);
+    const usersWhoChatted = await res.json();
 
-      // If URL has ?selected=user@example.com, pre-select that chat
-      if (preSelectedEmail && otherUsers.find(u => u.email === preSelectedEmail)) {
-        selectChat(preSelectedEmail);
-      }
-    };
-    fetchChats();
-  }, [myEmail]);
+    const allRes = await fetch('http://localhost:5000/api/auth/all-users');
+    const allUsers = await allRes.json();
+
+   let chatUsers = allUsers.filter(u => usersWhoChatted.includes(u.email));
+
+// ✅ If the selected user is not in the chat list, add them manually
+if (preSelectedEmail) {
+  const selectedUserData = allUsers.find(u => u.email === preSelectedEmail);
+  if (selectedUserData && !chatUsers.find(u => u.email === preSelectedEmail)) {
+    chatUsers = [selectedUserData, ...chatUsers];
+  }
+}
+
+    setChats(chatUsers);
+
+    if (preSelectedEmail && chatUsers.find(u => u.email === preSelectedEmail)) {
+      selectChat(preSelectedEmail);
+    } else if (chatUsers.length > 0) {
+      selectChat(chatUsers[0].email); // 👈 auto-select first chat
+    }
+  };
+  fetchChats();
+}, [myEmail]);
+
 
   const sendMessage = async () => {
     if (!text.trim() || !selectedUser) return;
