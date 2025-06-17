@@ -6,6 +6,7 @@ const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/posts');
 const notifRoutes = require('./routes/notifications');
 const messageRoutes = require('./routes/messages');
+const searchRoutes =require('./routes/search');
 const User = require('./models/User')
 
 const app = express();
@@ -17,6 +18,7 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/search',searchRoutes);
 app.use('/api/notifications', notifRoutes);
 // serves files like http://localhost:5000/uploads/abc.jpg
 app.use('/uploads', express.static('uploads'));
