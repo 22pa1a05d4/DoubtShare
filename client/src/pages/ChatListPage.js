@@ -451,131 +451,652 @@
 // export default ChatListPage;
 
 
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+// import React, { useEffect, useState } from 'react';
+// import { useNavigate, useLocation } from 'react-router-dom';
+// import './ChatListPage.css';
+
+// const ChatListPage = () => {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const [chats, setChats] = useState([]);
+//   const [messages, setMessages] = useState([]);
+//   const [selectedUser, setSelectedUser] = useState(null);
+//   const [text, setText] = useState('');
+
+//   const myEmail = localStorage.getItem('userEmail')?.toLowerCase();
+//   const queryParams = new URLSearchParams(location.search);
+//   const preSelectedEmail = queryParams.get('selected')?.toLowerCase();
+
+//   // Select chat and fetch messages
+//   const selectChat = async (userEmail) => {
+//     setSelectedUser(userEmail);
+//     const res = await fetch(`http://localhost:5000/api/messages/${myEmail}/${userEmail}`);
+//     const data = await res.json();
+//     setMessages(data);
+//   };
+
+//   useEffect(() => {
+//     if (!myEmail) {
+//       navigate('/login');
+//       return;
+//     }
+
+//     const fetchChats = async () => {
+//       try {
+//         // Step 1: Get emails you've chatted with
+//         const res = await fetch(`http://localhost:5000/api/messages/chats/${myEmail}`);
+//         const usersWhoChatted = await res.json(); // Ordered by recency
+
+//         // Step 2: Get user details
+//         const allRes = await fetch('http://localhost:5000/api/auth/all-users');
+//         const allUsers = await allRes.json();
+
+//         // Step 3: Map emails to user objects
+//         let chatUsers = usersWhoChatted
+//           .map(email => allUsers.find(u => u.email.toLowerCase() === email))
+//           .filter(u => u); // remove nulls
+
+//         // Step 4: Preselected email handling
+//         if (preSelectedEmail) {
+//           const selectedUserData = allUsers.find(u => u.email.toLowerCase() === preSelectedEmail);
+//           if (selectedUserData && !chatUsers.find(u => u.email.toLowerCase() === preSelectedEmail)) {
+//             chatUsers = [selectedUserData, ...chatUsers];
+//           }
+//         }
+
+//         setChats([...chatUsers]); // force re-render
+
+//         // Step 5: Auto-select default chat
+//         if (preSelectedEmail) {
+//           selectChat(preSelectedEmail);
+//         } else if (chatUsers.length > 0) {
+//           selectChat(chatUsers[0].email);
+//         }
+//       } catch (error) {
+//         console.error('Error loading chats:', error);
+//       }
+//     };
+
+//     fetchChats();
+//   }, [myEmail]);
+
+//   const sendMessage = async () => {
+//     if (!text.trim() || !selectedUser) return;
+//     const msg = { sender: myEmail, receiver: selectedUser, text };
+
+//     await fetch('http://localhost:5000/api/messages', {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify(msg),
+//     });
+
+//     setMessages(prev => [...prev, { ...msg, time: new Date() }]);
+//     setText('');
+//   };
+
+//   return (
+//     <div className="chatlist-container">
+//       <div className="sidebar">
+//         <h3>Messages</h3>
+//         {chats.map(user => (
+//           <div
+//             key={user.email}
+//             className={`chat-user ${selectedUser === user.email ? 'active' : ''}`}
+//             onClick={() => selectChat(user.email)}
+//           >
+//             {user.name || user.email}
+//           </div>
+//         ))}
+//       </div>
+
+//       <div className="chat-window">
+//         {selectedUser ? (
+//           <>
+//             <div className="chat-header">Chat with {selectedUser}</div>
+//             <div className="chat-body">
+//               {messages.map((m, i) => (
+//                 <div key={i} className={`msg ${m.sender === myEmail ? 'sent' : 'received'}`}>
+//                   <div className="msg-text">{m.text}</div>
+//                   <div className="msg-time">{new Date(m.time).toLocaleTimeString()}</div>
+//                 </div>
+//               ))}
+//             </div>
+//             <div className="chat-input">
+//               <input
+//                 value={text}
+//                 onChange={(e) => setText(e.target.value)}
+//                 placeholder="Type a message..."
+//               />
+//               <button onClick={sendMessage}>Send</button>
+//             </div>
+//           </>
+//         ) : (
+//           <div className="chat-placeholder">Select a chat to start messaging</div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ChatListPage;
+
+// import React, { useEffect, useRef, useState } from 'react';
+// import { useNavigate, useLocation }          from 'react-router-dom';
+// import './ChatListPage.css';
+// import io from 'socket.io-client';
+
+// const socket = io('http://localhost:5000', { autoConnect:false });
+
+// export default function ChatListPage () {
+//   /* ───── basics ───── */
+//   const navigate          = useNavigate();
+//   const location          = useLocation();
+//   const me                = localStorage.getItem('userEmail')?.toLowerCase();
+//   const preSel            = new URLSearchParams(location.search).get('selected')?.toLowerCase();
+
+//   /* ───── state ───── */
+//   const [chats, setChats]       = useState([]);           // left list (user objects)
+//   const [sel,   setSel]         = useState(null);         // selected user email
+//   const [msgs,  setMsgs]        = useState([]);           // messages of current chat
+//   const [text,  setText]        = useState('');
+//   const fileRef                = useRef();
+
+//   /* ───── helpers ───── */
+//   const loadThread = async (withUser) => {
+//     setSel(withUser);
+//     const r = await fetch(`http://localhost:5000/api/messages/${me}/${withUser}`);
+//     setMsgs(await r.json());
+//   };
+
+//   /* ───── initial data ───── */
+//   useEffect(() => {
+//     if (!me){ navigate('/login'); return; }
+
+//     /* connect socket once */
+//     socket.connect();
+//     socket.emit('register', me);
+//     socket.on('receiveMessage', m => {
+//       // show message only if open thread
+//       if (m.sender.toLowerCase() === sel?.toLowerCase()) {
+//         setMsgs(prev => [...prev, m]);
+//       }
+//     });
+
+//     const fetchChats = async () => {
+//       /* 1) recent chat partner emails */
+//       const resChats  = await fetch(`http://localhost:5000/api/messages/chats/${me}`);
+//       const chatEmails = await resChats.json();
+
+//       /* 2) all users → map */
+//       const resUsers  = await fetch('http://localhost:5000/api/auth/all-users');
+//       const users     = await resUsers.json();
+
+//       let chatUsers = chatEmails
+//         .map(e => users.find(u => u.email.toLowerCase() === e))
+//         .filter(Boolean);
+
+//       /* 3) append pre‑selected user if not present */
+//       if (preSel){
+//         const pre = users.find(u => u.email.toLowerCase() === preSel);
+//         if (pre && !chatUsers.find(u => u.email.toLowerCase() === preSel)){
+//           chatUsers = [pre, ...chatUsers];
+//         }
+//       }
+//       setChats(chatUsers);
+
+//       /* 4) auto select */
+//       if (preSel)      loadThread(preSel);
+//       else if (chatUsers.length) loadThread(chatUsers[0].email);
+//     };
+//     fetchChats();
+
+//     /* cleanup */
+//     return () => socket.disconnect();
+//   // eslint-disable-next-line react-hooks/exhaustive-deps
+//   }, [me]);
+
+//   /* ───── send helpers ───── */
+//   const sendText = async () => {
+//     if (!text.trim()) return;
+//     const body = { sender:me, receiver:sel, text, type:'text' };
+//     await fetch('http://localhost:5000/api/messages', {
+//       method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+//     });
+//     socket.emit('sendMessage', body);
+//     setMsgs(prev => [...prev, { ...body, time:new Date() }]);
+//     setText('');
+//   };
+
+//   const sendFile = async (file) => {
+//     if (!file) return;
+//     const fd = new FormData();
+//     fd.append('file', file);
+//     fd.append('sender',   me);
+//     fd.append('receiver', sel);
+
+//     const r = await fetch('http://localhost:5000/api/messages/file', { method:'POST', body:fd });
+//     const saved = await r.json();               // { url, mime, ... }
+//     socket.emit('sendMessage', saved);
+//     setMsgs(prev => [...prev, saved]);
+//   };
+
+//   /* ───── scroll to bottom on message add ───── */
+//   const bottomRef = useRef();
+//   useEffect(()=>{ bottomRef.current?.scrollIntoView({behavior:'smooth'}); }, [msgs]);
+
+//   /* ───── render ───── */
+//   return (
+//     <div className="chat-wrap">
+//       {/* ─────────── left list ─────────── */}
+//       <aside className="chat-side">
+//         <h3>Messages</h3>
+//         {chats.map(u => (
+//           <div key={u.email}
+//                className={`chat-user ${sel===u.email?'active':''}`}
+//                onClick={()=>loadThread(u.email)}>
+//             {u.name || u.email}
+//           </div>
+//         ))}
+//       </aside>
+
+//       {/* ─────────── right pane ─────────── */}
+//       <section className="chat-main">
+//         {sel ? (
+//           <>
+//             <header className="chat-head">Chat with {sel}</header>
+
+//             <div className="chat-body">
+//               {msgs.map((m,i)=>(
+//                 <div key={i} className={`bubble ${m.sender===me?'me':'them'}`}>
+//                   {m.type==='file'
+//                     ? <a href={m.url} target="_blank" rel="noreferrer">📎 {m.originalName}</a>
+//                     : m.text}
+//                   <span className="t">{new Date(m.time).toLocaleTimeString()}</span>
+//                 </div>
+//               ))}
+//               <div ref={bottomRef}/>
+//             </div>
+
+//             <footer className="chat-input-row">
+//               <input ref={fileRef} type="file" style={{display:'none'}}
+//                      onChange={e=>{ sendFile(e.target.files[0]); e.target.value=''; }}/>
+//               <button className="pin" onClick={()=>fileRef.current.click()}>📎</button>
+//               <input className="msg-input"
+//                      value={text}
+//                      onKeyDown={e=>e.key==='Enter' && sendText()}
+//                      onChange={e=>setText(e.target.value)}
+//                      placeholder="Type message…"/>
+//               <button className="send" onClick={sendText}>Send</button>
+//             </footer>
+//           </>
+//         ):(
+//           <div className="chat-placeholder">Select a chat to start messaging</div>
+//         )}
+//       </section>
+//     </div>
+//   );
+// }
+
+// // client/src/pages/ChatListPage.jsx
+// import React, { useEffect, useRef, useState } from 'react';
+// import { useNavigate, useLocation } from 'react-router-dom';
+// import './ChatListPage.css';
+
+// const mimeIsImg   = m => m?.startsWith('image/');
+// const mimeIsVideo = m => m?.startsWith('video/');
+// const mimeIsAudio = m => m?.startsWith('audio/');
+
+// export default function ChatListPage () {
+//   /* ----- basics ----- */
+//   const nav          = useNavigate();
+//   const loc          = useLocation();
+//   const me           = localStorage.getItem('userEmail')?.toLowerCase();
+//   const preSel       = new URLSearchParams(loc.search).get('selected')?.toLowerCase();
+
+//   /* ----- state ----- */
+//   const [threadList, setThreadList] = useState([]);   // left pane
+//   const [withUser,   setWithUser]   = useState(null); // email
+//   const [msgs,       setMsgs]       = useState([]);
+//   const [text,       setText]       = useState('');
+
+//   const fileInpRef = useRef(null);
+//   const bottomRef  = useRef(null);
+
+//   /* scroll down on every new msg */
+//   useEffect(() => bottomRef.current?.scrollIntoView({ behaviour:'smooth' }), [msgs]);
+
+//   /* ----- load chats + default thread ----- */
+//   useEffect(() => {
+//     if (!me) { nav('/login'); return; }
+
+//     const load = async () => {
+//       /* who did I chat with? */
+//       const r1   = await fetch(`http://localhost:5000/api/messages/chats/${me}`);
+//       const peers = await r1.json();
+
+//       /* get user records */
+//       const r2   = await fetch('http://localhost:5000/api/auth/all-users');
+//       const users= await r2.json();
+
+//       let list = peers
+//         .map(e => users.find(u => u.email.toLowerCase() === e))
+//         .filter(Boolean);
+
+//       if (preSel) {
+//         const extra = users.find(u => u.email.toLowerCase() === preSel);
+//         if (extra && !list.find(u => u.email.toLowerCase() === preSel)) {
+//           list = [extra, ...list];
+//         }
+//       }
+//       setThreadList(list);
+
+//       const first = preSel || (list[0]?.email);
+//       if (first) selectThread(first);
+//     };
+//     load();
+//   // eslint-disable-next-line react-hooks/exhaustive-deps
+//   }, [me]);
+
+//   /* ----- load messages for one thread ----- */
+//   const selectThread = async (email) => {
+//     setWithUser(email);
+//     const r = await fetch(`http://localhost:5000/api/messages/${me}/${email}`);
+//     setMsgs(await r.json());
+//   };
+  
+//   /* ----- send text ----- */
+//   const sendText = async () => {
+//     if (!text.trim()) return;
+//     const body = { sender:me, receiver:withUser, text };
+
+//     const r = await fetch('http://localhost:5000/api/messages', {
+//       method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+//     });
+//     const saved = await r.json();
+//     setMsgs(prev => [...prev, saved]);
+//     setText('');
+//   };
+
+//   /* ----- send file ----- */
+//   const sendFile = async (file) => {
+//     if (!file) return;
+//     const fd = new FormData();
+//     fd.append('file', file);
+//     fd.append('sender',   me);
+//     fd.append('receiver', withUser);
+
+//     const r = await fetch('http://localhost:5000/api/messages/file', {
+//       method:'POST', body:fd
+//     });
+//     const saved = await r.json();
+//     setMsgs(prev => [...prev, saved]);
+//   };
+
+//   /* ----- render ----- */
+//   return (
+//     <div className="chat-wrap">
+//       {/* ---------- left ---------- */}
+//       <aside className="chat-side">
+//         <h3>Messages</h3>
+//         {threadList.map(u => (
+//           <div key={u.email}
+//                className={`chat-user ${withUser===u.email ? 'active':''}`}
+//                onClick={() => selectThread(u.email)}>
+//             {u.name || u.email}
+//           </div>
+//         ))}
+//       </aside>
+
+//       {/* ---------- right ---------- */}
+//       <section className="chat-main">
+//         {!withUser ? (
+//           <div className="chat-placeholder">Select a chat to start messaging</div>
+//         ) : (
+//           <>
+//             <header className="chat-head">Chat with {withUser}</header>
+
+//             <div className="chat-body">
+//               {msgs.map((m,i)=>(
+//                 <div key={i} className={`bubble ${m.sender===me?'me':'them'}`}>
+//                   {m.type==='file' ? (
+//                     mimeIsImg(m.mime)   ? <img src={m.url} alt="img"  className="bubble-img"/> :
+//                     mimeIsVideo(m.mime) ? <video src={m.url} controls className="bubble-media"/> :
+//                     mimeIsAudio(m.mime) ? <audio src={m.url} controls/> :
+//                     <a href={m.url} target="_blank" rel="noreferrer">📎 {m.originalName}</a>
+//                   ) : m.text}
+//                   <span className="t">{new Date(m.time).toLocaleTimeString()}</span>
+//                 </div>
+//               ))}
+//               <div ref={bottomRef}/>
+//             </div>
+
+//             <footer className="chat-input-row">
+//               <input ref={fileInpRef} type="file" style={{display:'none'}}
+//                      onChange={e=>{ sendFile(e.target.files[0]); e.target.value=''; }}/>
+//               <button className="pin" onClick={()=>fileInpRef.current.click()}>📎</button>
+
+//               <textarea
+//                 className="msg-box"
+//                 rows={2}
+//                 value={text}
+//                 placeholder="Type message…"
+//                 onChange={e=>setText(e.target.value)}
+//                 onKeyDown={e=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendText(); } }}
+//               />
+
+//               <button className="send" onClick={sendText}>Send</button>
+//             </footer>
+//           </>
+//         )}
+//       </section>
+//     </div>
+//   );
+// }
+
+//final
+// client/src/pages/ChatListPage.jsx
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate, useLocation }            from 'react-router-dom';
 import './ChatListPage.css';
 
-const ChatListPage = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [chats, setChats] = useState([]);
-  const [messages, setMessages] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [text, setText] = useState('');
+/* quick helpers for mime‑type checks */
+const mimeIsImg   = m => m?.startsWith('image/');
+const mimeIsVideo = m => m?.startsWith('video/');
+const mimeIsAudio = m => m?.startsWith('audio/');
 
-  const myEmail = localStorage.getItem('userEmail')?.toLowerCase();
-  const queryParams = new URLSearchParams(location.search);
-  const preSelectedEmail = queryParams.get('selected')?.toLowerCase();
+export default function ChatListPage () {
+  /* ─────────────────── runtime basics ─────────────────── */
+  const nav           = useNavigate();
+  const loc           = useLocation();
+  const me            = localStorage.getItem('userEmail')?.toLowerCase();
+  const preSelected   = new URLSearchParams(loc.search).get('selected')?.toLowerCase();
 
-  // Select chat and fetch messages
-  const selectChat = async (userEmail) => {
-    setSelectedUser(userEmail);
-    const res = await fetch(`http://localhost:5000/api/messages/${myEmail}/${userEmail}`);
-    const data = await res.json();
-    setMessages(data);
+  /* ─────────────────── component state ─────────────────── */
+  const [threads, setThreads] = useState([]);  // left‑hand list (user objects)
+  const [withUser, setWithUser] = useState(null);
+  const [msgs,     setMsgs]     = useState([]);  // messages for active thread
+  const [text,     setText]     = useState('');
+
+  /* refs */
+  const fileRef   = useRef(null);  // <input type=file … >
+  const bottomRef = useRef(null);  // autoscroll helper
+
+  /* ─────────────────── helper: fetch message thread ─────────────────── */
+  const loadThread = async (partnerEmail) => {
+    setWithUser(partnerEmail);
+    const res   = await fetch(
+      `http://localhost:5000/api/messages/${me}/${partnerEmail}`
+    );
+    const data  = await res.json();
+    setMsgs(data);
   };
 
+  /* ─────────────────── on mount: load chat list & first thread ─────────────────── */
   useEffect(() => {
-    if (!myEmail) {
-      navigate('/login');
-      return;
-    }
+    if (!me) { nav('/login'); return; }
 
-    const fetchChats = async () => {
-      try {
-        // Step 1: Get emails you've chatted with
-        const res = await fetch(`http://localhost:5000/api/messages/chats/${myEmail}`);
-        const usersWhoChatted = await res.json(); // Ordered by recency
+    const bootstrap = async () => {
+      /* 1) all partners (by recent activity) */
+      const resPartners = await fetch(`http://localhost:5000/api/messages/chats/${me}`);
+      const partnerEmails = await resPartners.json();          // ["a@x","b@y", …]
 
-        // Step 2: Get user details
-        const allRes = await fetch('http://localhost:5000/api/auth/all-users');
-        const allUsers = await allRes.json();
+      /* 2) map → user objects */
+      const resUsers = await fetch('http://localhost:5000/api/auth/all-users');
+      const allUsers = await resUsers.json();
+      let list = partnerEmails
+        .map(e => allUsers.find(u => u.email.toLowerCase() === e))
+        .filter(Boolean);
 
-        // Step 3: Map emails to user objects
-        let chatUsers = usersWhoChatted
-          .map(email => allUsers.find(u => u.email.toLowerCase() === email))
-          .filter(u => u); // remove nulls
-
-        // Step 4: Preselected email handling
-        if (preSelectedEmail) {
-          const selectedUserData = allUsers.find(u => u.email.toLowerCase() === preSelectedEmail);
-          if (selectedUserData && !chatUsers.find(u => u.email.toLowerCase() === preSelectedEmail)) {
-            chatUsers = [selectedUserData, ...chatUsers];
-          }
+      /* 3) include ?selected=user@x.com if not in list yet */
+      if (preSelected) {
+        const selUser = allUsers.find(u => u.email.toLowerCase() === preSelected);
+        if (selUser && !list.find(u => u.email.toLowerCase() === preSelected)) {
+          list = [selUser, ...list];
         }
-
-        setChats([...chatUsers]); // force re-render
-
-        // Step 5: Auto-select default chat
-        if (preSelectedEmail) {
-          selectChat(preSelectedEmail);
-        } else if (chatUsers.length > 0) {
-          selectChat(chatUsers[0].email);
-        }
-      } catch (error) {
-        console.error('Error loading chats:', error);
       }
+      setThreads(list);
+
+      /* 4) pick default thread */
+      const first = preSelected || list?.[0]?.email;
+      if (first) loadThread(first);
     };
 
-    fetchChats();
-  }, [myEmail]);
+    bootstrap();
+    // eslint‑disable‑next‑line react‑hooks/exhaustive‑deps
+  }, [me]);
 
-  const sendMessage = async () => {
-    if (!text.trim() || !selectedUser) return;
-    const msg = { sender: myEmail, receiver: selectedUser, text };
+  /* ─────────────────── auto‑scroll down whenever msgs changes ─────────────────── */
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior:'smooth' });
+  }, [msgs]);
 
-    await fetch('http://localhost:5000/api/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(msg),
+  /* ─────────────────── send helpers ─────────────────── */
+  const sendText = async () => {
+    if (!text.trim() || !withUser) return;
+
+    const payload = { sender:me, receiver:withUser, text };
+
+    const res = await fetch('http://localhost:5000/api/messages/send', {
+      method : 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body   : JSON.stringify(payload)
     });
-
-    setMessages(prev => [...prev, { ...msg, time: new Date() }]);
-    setText('');
+    if (res.ok) {
+      setMsgs(prev => [...prev, { ...payload, time:new Date() }]);
+      setText('');
+    }
   };
 
+  const sendFile = async (file) => {
+    if (!file || !withUser) return;
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('sender',   me);
+    fd.append('receiver', withUser);
+
+    const res = await fetch('http://localhost:5000/api/messages/file', {
+      method:'POST', body:fd
+    });
+    if (res.ok) {
+      const saved = await res.json();          // {url, mimeType, ...}
+      setMsgs(prev => [...prev, saved]);
+    }
+  };
+
+  /* ─────────────────── UI ─────────────────── */
   return (
-    <div className="chatlist-container">
-      <div className="sidebar">
+    <div className="chat-wrap">
+
+      {/* ──────────────── left side (threads) ──────────────── */}
+      <aside className="chat-side">
         <h3>Messages</h3>
-        {chats.map(user => (
-          <div
-            key={user.email}
-            className={`chat-user ${selectedUser === user.email ? 'active' : ''}`}
-            onClick={() => selectChat(user.email)}
-          >
-            {user.name || user.email}
+        {threads.map(u => (
+          <div key={u.email}
+               className={`chat-user ${withUser===u.email ? 'active':''}`}
+               onClick={() => loadThread(u.email)}>
+            {u.name || u.email}
           </div>
         ))}
-      </div>
+      </aside>
 
-      <div className="chat-window">
-        {selectedUser ? (
+      {/* ──────────────── right side (conversation) ──────────────── */}
+      <section className="chat-main">
+        {!withUser ? (
+          <div className="chat-placeholder">
+            Select a chat to start messaging
+          </div>
+        ) : (
           <>
-            <div className="chat-header">Chat with {selectedUser}</div>
+            {/* header */}
+            <header className="chat-head">
+              Chat with {withUser}
+            </header>
+
+            {/* message area */}
             <div className="chat-body">
-              {messages.map((m, i) => (
-                <div key={i} className={`msg ${m.sender === myEmail ? 'sent' : 'received'}`}>
-                  <div className="msg-text">{m.text}</div>
-                  <div className="msg-time">{new Date(m.time).toLocaleTimeString()}</div>
+              {msgs.map((m,i) => (
+                <div key={i} className={`bubble ${m.sender===me ? 'me':'them'}`}>
+                  {/* text or media preview */}
+                  {m.mimeType ? (
+                    mimeIsImg(m.mimeType)   ? (
+                      <img src={m.media || m.url} alt="img" className="bubble-img"/>
+                    ) : mimeIsVideo(m.mimeType) ? (
+                      <video src={m.media || m.url} controls className="bubble-media"/>
+                    ) : mimeIsAudio(m.mimeType) ? (
+                      <audio src={m.media || m.url} controls/>
+                    ) : (
+                      <a href={m.media || m.url} target="_blank" rel="noreferrer">
+                        📎 {m.originalName || 'file'}
+                      </a>
+                    )
+                  ) : (
+                    m.text
+                  )}
+
+                  <span className="t">
+                    {new Date(m.time).toLocaleTimeString()}
+                  </span>
                 </div>
               ))}
+              <div ref={bottomRef}/>
             </div>
-            <div className="chat-input">
+
+            {/* input row */}
+            <footer className="chat-input-row">
+              {/* hidden file input */}
               <input
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Type a message..."
+                ref={fileRef}
+                type="file"
+                style={{ display:'none' }}
+                onChange={e => { sendFile(e.target.files[0]); e.target.value=''; }}
               />
-              <button onClick={sendMessage}>Send</button>
-            </div>
+
+              <button className="pin" onClick={() => fileRef.current.click()}>
+                📎
+              </button>
+
+              <textarea
+                className="msg-box"
+                rows={2}
+                value={text}
+                placeholder="Type message…"
+                onChange={e => setText(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendText();
+                  }
+                }}
+              />
+
+              <button className="send" onClick={sendText}>
+                Send
+              </button>
+            </footer>
           </>
-        ) : (
-          <div className="chat-placeholder">Select a chat to start messaging</div>
         )}
-      </div>
+      </section>
     </div>
   );
-};
+}
 
-export default ChatListPage;
