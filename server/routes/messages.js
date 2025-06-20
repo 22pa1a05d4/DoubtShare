@@ -82,7 +82,7 @@ const fs      = require('fs');
 const router   = express.Router();
 const multer   = require('multer');
 // const upload   = multer({ dest: 'uploads/' });   // files land in /uploads
-
+const Post     = require('../models/Post');
 const Message  = require('../models/Message');
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads'),
@@ -216,7 +216,36 @@ router.post('/file', upload.single('file'), async (req, res) => {
     res.status(500).json({ error: 'Upload failed' });
   }
 });
+router.post('/share-post', async (req, res) => {
+  const { sender, postId, targets } = req.body;
+  try {
+    const post = await Post.findById(postId);
+    if (!post) return res.status(404).json({ error:'Post not found' });
 
+    /* build image url (or '') */
+    const mediaURL = post.imageUrl
+      ? `http://localhost:5000/uploads/${post.imageUrl.replace(/^\/?uploads\/?/, '')}`
+      : '';
+
+    /* create one message per receiver */
+    await Promise.all(targets.map(email =>
+      Message.create({
+        sender,
+        receiver : email,
+        text     : post.description || '',
+        media    : mediaURL,
+        mimeType : mediaURL ? 'image/jpeg' : null,
+        originalName: 'Shared post',
+        time     : new Date()
+      })
+    ));
+
+    res.json({ success:true });
+  } catch (err) {
+    console.error('share‑post error', err);
+    res.status(500).json({ error:'Share failed' });
+  }
+});
 router.post('/send', async (req, res) => {
   const { sender, receiver, text, media, mimeType } = req.body;
 
