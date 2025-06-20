@@ -6,6 +6,46 @@
   padding: 1rem;
   margin-bottom: 1.5rem;
 }
+.share-modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.share-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.share-user-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+.share-user-list li {
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin: 5px 0;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.share-user-list li.selected {
+  background: #007bff;
+  color: white;
+}
+.share-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
 
 .post-image {
   width: 100%;

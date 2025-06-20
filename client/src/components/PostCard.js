@@ -279,7 +279,147 @@
 
 
 
-// client/src/components/PostCard.js
+// // client/src/components/PostCard.js
+// import React, { useState } from 'react';
+// import './PostCard.css';
+
+// const PostCard = ({ post, refreshFeed, onDelete }) => {
+//   const [showAnswers, setShowAnswers] = useState(false);
+//   const [newAnswer, setNewAnswer] = useState('');
+//   const [answers, setAnswers] = useState(post.comments || []);
+//   const [saved, setSaved] = useState(false);
+
+//   const currentEmail = localStorage.getItem('userEmail');
+//   const isMyPost = currentEmail === post.email;
+
+//   const getImgSrc = () => {
+//     if (!post.imageUrl) return null;
+//     const path = post.imageUrl.startsWith('/uploads')
+//       ? post.imageUrl
+//       : `/uploads/${post.imageUrl.replace(/^\/?/, '')}`;
+//     return `http://localhost:5000${path}`;
+//   };
+
+//   const submitAnswer = async () => {
+//     if (!newAnswer.trim()) return;
+//     try {
+//       const res = await fetch(
+//         `http://localhost:5000/api/posts/${post._id}/comment`,
+//         {
+//           method: 'POST',
+//           headers: { 'Content-Type': 'application/json' },
+//           body: JSON.stringify({
+//             commenterEmail: currentEmail,
+//             text: newAnswer.trim(),
+//           }),
+//         }
+//       );
+//       const data = await res.json();
+//       setAnswers(prev => [...prev, data]);
+//       setNewAnswer('');
+//       refreshFeed?.();
+//     } catch (err) {
+//       console.error('Error posting answer', err);
+//     }
+//   };
+
+//   const handleDelete = async () => {
+//     if (!window.confirm('Delete this post?')) return;
+//     try {
+//       const res = await fetch(`http://localhost:5000/api/posts/${post._id}`, {
+//         method: 'DELETE',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ email: currentEmail }),
+//       });
+
+//       if (res.ok) {
+//         onDelete?.(); // notify parent to remove from UI
+//       } else {
+//         const msg = await res.text();
+//         alert(`Failed to delete: ${msg}`);
+//       }
+//     } catch (err) {
+//       console.error('Delete failed', err);
+//       alert('Failed to delete');
+//     }
+//   };
+
+//   return (
+//     <div className="post-card">
+//       {getImgSrc() && (
+//         <img
+//           src={getImgSrc()}
+//           alt="Post"
+//           className="post-image"
+//           onError={(e) => (e.target.style.display = 'none')}
+//         />
+//       )}
+
+//       {post.description && (
+//         <p className="post-description">{post.description}</p>
+//       )}
+
+//       <div className="post-actions">
+//         <button onClick={() => setShowAnswers((v) => !v)}>
+//           {showAnswers
+//             ? 'Hide Answers'
+//             : isMyPost
+//             ? 'View Answers'
+//             : 'View / Answer'}
+//         </button>
+
+//         <button
+//           onClick={() => navigator.clipboard.writeText(window.location.href)}
+//         >
+//           Share
+//         </button>
+
+//         {isMyPost ? (
+//           <button className="danger" onClick={handleDelete}>
+//             Delete
+//           </button>
+//         ) : (
+//           <button onClick={() => setSaved((p) => !p)}>
+//             {saved ? 'Saved' : 'Save'}
+//           </button>
+//         )}
+//       </div>
+
+//       {showAnswers && (
+//         <div className="answer-section">
+//           {!isMyPost && (
+//             <>
+//               <textarea
+//                 className="answer-textbox"
+//                 placeholder="Write your answer…"
+//                 value={newAnswer}
+//                 onChange={(e) => setNewAnswer(e.target.value)}
+//               />
+//               <button className="submit-btn" onClick={submitAnswer}>
+//                 Send
+//               </button>
+//             </>
+//           )}
+
+//           <div className="all-answers">
+//             {answers.length === 0 ? (
+//               <p className="no-answers">No answers yet.</p>
+//             ) : (
+//               answers.map((a, idx) => (
+//                 <div className="single-answer" key={idx}>
+//                   <strong>{a.user}</strong>
+//                   <p>{a.text}</p>
+//                 </div>
+//               ))
+//             )}
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default PostCard;
 import React, { useState } from 'react';
 import './PostCard.css';
 
@@ -288,6 +428,10 @@ const PostCard = ({ post, refreshFeed, onDelete }) => {
   const [newAnswer, setNewAnswer] = useState('');
   const [answers, setAnswers] = useState(post.comments || []);
   const [saved, setSaved] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [followingList, setFollowingList] = useState([]);
+  const [selectedUsersToSend, setSelectedUsersToSend] = useState([]);
+
 
   const currentEmail = localStorage.getItem('userEmail');
   const isMyPost = currentEmail === post.email;
@@ -333,7 +477,7 @@ const PostCard = ({ post, refreshFeed, onDelete }) => {
       });
 
       if (res.ok) {
-        onDelete?.(); // notify parent to remove from UI
+        onDelete?.();
       } else {
         const msg = await res.text();
         alert(`Failed to delete: ${msg}`);
@@ -343,6 +487,66 @@ const PostCard = ({ post, refreshFeed, onDelete }) => {
       alert('Failed to delete');
     }
   };
+
+  const fetchFollowing = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/auth/following/${currentEmail}`);
+      const data = await res.json();
+      const isCreatorInList = data.some(u => u.email === post.email);
+      if (!isCreatorInList && post.email !== currentEmail) {
+        data.unshift({ email: post.email, name: post.name || post.email });
+      }
+      setFollowingList(data);
+      setShowShareModal(true);
+    } catch (err) {
+      console.error('Failed to load following list', err);
+    }
+  };
+const toggleSave = async () => {
+  try {
+    const res = await fetch(`http://localhost:5000/api/posts/save/${currentEmail}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ postId: post._id }),
+    });
+    if (res.ok) {
+      setSaved((prev) => !prev);
+    }
+  } catch (err) {
+    console.error('Failed to save post', err);
+  }
+};
+
+
+ const sharePost = async () => {
+  if (selectedUsersToSend.length === 0) return;
+
+  const payload = {
+    sender: currentEmail,
+    text: `Check out this post:\n\n${post.description || ''}`,
+    media: getImgSrc() || '',
+    mimeType: post.imageUrl ? 'image/jpeg' : null
+  };
+
+  try {
+    await Promise.all(
+      selectedUsersToSend.map(receiver =>
+        fetch('http://localhost:5000/api/messages/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...payload, receiver }),
+        })
+      )
+    );
+    alert('Post shared successfully!');
+    setShowShareModal(false);
+    setSelectedUsersToSend([]);
+  } catch (err) {
+    console.error('Error sharing post', err);
+    alert('Failed to share post');
+  }
+};
+
 
   return (
     <div className="post-card">
@@ -368,11 +572,7 @@ const PostCard = ({ post, refreshFeed, onDelete }) => {
             : 'View / Answer'}
         </button>
 
-        <button
-          onClick={() => navigator.clipboard.writeText(window.location.href)}
-        >
-          Share
-        </button>
+        <button onClick={fetchFollowing}>Share</button>
 
         {isMyPost ? (
           <button className="danger" onClick={handleDelete}>
@@ -400,7 +600,6 @@ const PostCard = ({ post, refreshFeed, onDelete }) => {
               </button>
             </>
           )}
-
           <div className="all-answers">
             {answers.length === 0 ? (
               <p className="no-answers">No answers yet.</p>
@@ -412,6 +611,37 @@ const PostCard = ({ post, refreshFeed, onDelete }) => {
                 </div>
               ))
             )}
+          </div>
+        </div>
+      )}
+
+      {showShareModal && (
+        <div className="share-modal">
+          <div className="share-content">
+            <h3>Select someone to share with:</h3>
+            <ul className="share-user-list">
+              {followingList.map((user, idx) => (
+                <li
+  key={idx}
+  className={selectedUsersToSend.includes(user.email) ? 'selected' : ''}
+  onClick={() => {
+    setSelectedUsersToSend((prev) =>
+      prev.includes(user.email)
+        ? prev.filter(email => email !== user.email)
+        : [...prev, user.email]
+    );
+  }}
+>
+  {user.name || user.email || 'Unknown User'}
+</li>
+
+              ))}
+            </ul>
+            <div className="share-actions">
+              <button onClick={sharePost} disabled={selectedUsersToSend.length === 0}>Send</button>
+
+              <button onClick={() => setShowShareModal(false)}>Cancel</button>
+            </div>
           </div>
         </div>
       )}
