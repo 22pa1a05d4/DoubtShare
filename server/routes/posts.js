@@ -237,18 +237,97 @@ router.get('/my-posts/:email', async (req, res) => {
 /* ───────────────────────────────
    FEED (others’ posts)
 ──────────────────────────────── */
+// router.get('/feed/:email', async (req, res) => {
+//   const { email } = req.params;
+//   try {
+//     const posts = await Post.find({ email: { $ne: email } })
+//                             .sort({ createdAt: -1 })
+//                             .lean();
+//     res.json(posts);
+//   } catch (err) {
+//     console.error('Feed fetch error:', err);
+//     res.status(500).send('Server error while loading feed');
+//   }
+// });
+// GET feed with author metadata
+
+// router.get('/feed/:email', async (req, res) => {
+//   const { email } = req.params;
+//   try {
+//     const posts = await Post.find({ email: { $ne: email } })
+//       .sort({ createdAt: -1 })
+//       .lean();
+
+//     // 🔧 Add author info (branch, year, name)
+//     const User = require('../models/User');
+//     const users = await User.find({
+//       email: { $in: posts.map(p => p.email) }
+//     }).lean();
+
+//     const byEmail = users.reduce((acc, u) => {
+//       acc[u.email] = u; return acc;
+//     }, {});
+
+//     const enriched = posts.map(p => ({
+//   ...p,
+//   author: {
+//     name: [
+//       byEmail[p.email]?.firstName || '',
+//       byEmail[p.email]?.lastName || ''
+//     ].join(' ').trim() || 'User',
+//     branch: byEmail[p.email]?.branch || ''
+//     // ✅ Remove year
+//   },
+//   tags: p.tags || [],
+//   subject: p.subject || ''
+// }));
+
+
+//     res.json(enriched);
+//   } catch (err) {
+//     console.error('Feed fetch error:', err);
+//     res.status(500).send('Server error while loading feed');
+//   }
+// });
 router.get('/feed/:email', async (req, res) => {
   const { email } = req.params;
   try {
     const posts = await Post.find({ email: { $ne: email } })
-                            .sort({ createdAt: -1 })
-                            .lean();
-    res.json(posts);
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const User = require('../models/User');
+
+    // Extract all emails from posts
+    const uniqueEmails = [...new Set(posts.map(p => p.email))];
+
+    const users = await User.find({ email: { $in: uniqueEmails } }).lean();
+
+    const byEmail = {};
+    users.forEach(u => {
+      byEmail[u.email] = u;
+    });
+
+    const enriched = posts.map(p => {
+      const user = byEmail[p.email] || {};
+      return {
+        ...p,
+       author: {
+  name: (user.name || 'User').split(' ')[0], // 👈 only first name
+  branch: user.branch || ''
+},
+        tags: p.tags || [],
+        subject: p.subject || ''
+      };
+    });
+
+    res.json(enriched);
   } catch (err) {
     console.error('Feed fetch error:', err);
     res.status(500).send('Server error while loading feed');
   }
 });
+
 
 /* ───────────────────────────────
    ADD COMMENT  → returns new comment {user,text,createdAt}

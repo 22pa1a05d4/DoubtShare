@@ -1127,14 +1127,13 @@ const toggleSave = async () => {
     //   </div>
     <div className="post-card">
   <div className="post-header">
-    <img
-      src={post.author?.profilePhoto || "/avatar.png"}
-      alt="profile"
-      className="profile-pic"
-    />
+   <div className="profile-initial">
+  {post.author?.name?.charAt(0)?.toUpperCase() || 'U'}
+</div>
+
     <div className="author-info">
       <strong>{post.author?.name || 'Anonymous'}</strong>
-      <p>{post.author?.branch || 'Dept'} • {post.author?.year || 'Year'}</p>
+      <p>{post.author?.branch || 'Dept'}</p>
     </div>
     <button className="follow-btn">Follow</button>
   </div>
