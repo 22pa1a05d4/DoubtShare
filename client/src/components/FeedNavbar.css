@@ -200,6 +200,13 @@
 .mobile-menu a:last-child {
   border-bottom: none;
 }
+.profile-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
 
 /* Responsive breakpoints */
 @media (max-width: 768px) {
