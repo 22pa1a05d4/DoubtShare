@@ -938,7 +938,7 @@
 
 
 
-
+//finallll
 
 // client/src/pages/PostLoginHome.js
 import React, { useEffect, useState } from 'react';
@@ -954,16 +954,29 @@ const PostLoginHome = () => {
   const [newPost,   setNewPost]   = useState({ description:'', image:null });
   const [userPosts, setUserPosts] = useState([]);
   const [feedPosts, setFeedPosts] = useState([]);
-
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   /* ── profile ── */
   useEffect(() => {
-    const email = localStorage.getItem('userEmail');
-    if (!email) return;
-    fetch(`http://localhost:5000/api/auth/profile/${email}`)
-      .then(r => r.json())
-      .then(setUserInfo)
-      .catch(err => console.error('Profile fetch error', err));
-  }, []);
+  const email = localStorage.getItem('userEmail');
+  if (!email) return;
+
+  const fetchProfile = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/auth/profile/${email}`);
+      const data = await response.json();
+
+      console.log("Fetched profile data:", data); // Optional: for debugging
+      setUserInfo(data);
+    } catch (err) {
+      console.error('Profile fetch error:', err);
+    } finally {
+      setIsLoadingProfile(false); // ✅ Ensures loading stops no matter what
+    }
+  };
+
+  fetchProfile();
+}, []);
+
 
   /* ── my posts ── */
   const fetchMyPosts = async () => {
@@ -1019,7 +1032,12 @@ const PostLoginHome = () => {
               />
             </div>
             <div className="profile-info">
-              <h3>{userInfo.name || 'Loading…'}</h3>
+              <h3>
+  {isLoadingProfile
+    ? 'Loading…'
+    : `${userInfo.firstName || ''} ${userInfo.lastName || ''}`.trim() || 'No name'}
+</h3>
+
               <p className="profile-desc">Studying at {userInfo.college}</p>
               <p className="profile-location">{userInfo.branch}</p>
             </div>
@@ -1076,6 +1094,7 @@ const PostLoginHome = () => {
             />
             <input
               type="file"
+
               accept="image/*"
               onChange={e => setNewPost({ ...newPost, image:e.target.files[0] })}
             />
@@ -1093,3 +1112,4 @@ const PostLoginHome = () => {
 };
 
 export default PostLoginHome;
+
