@@ -1043,15 +1043,11 @@ const PostLoginHome = () => {
             </div>
             <hr />
             <div className="profile-stats">
-             <Link to="/saved-posts" style={{ textDecoration:'none', color:'#0073b1' }}>Saved posts</Link>
+  <Link to="/saved-posts" className="profile-link">Saved Posts</Link>
+  <Link to="/my-posts" className="profile-link">My Posts</Link>
+  <Link to="/" className="profile-link logout">Logout</Link>
+</div>
 
-
-               <Link to="/my-posts"  style={{ textDecoration:'none', color:'#0073b1' }}>
-       My Post
-        </Link>
-        <br></br>
-            <Link to="/" style={{ textDecoration:'none', color:'#0073b1' }}>Logout</Link>
-            </div>
           </div>
         </aside>
 

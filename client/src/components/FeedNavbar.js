@@ -834,6 +834,8 @@ const FeedNavbar = () => {
   const [notifs, setNotifs] = useState([]);
   const [following, setFollowing] = useState([]);
   const [popupUser, setPopupUser] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   const [searchResults, setSearchResults] = useState({ users: [], posts: [] });
   const [showDropdown, setShowDropdown] = useState(false);
@@ -879,6 +881,14 @@ const FeedNavbar = () => {
       console.error('photo error', err);
     }
   };
+ useEffect(() => {
+  const handleResize = () => {
+    setIsMobile(window.innerWidth <= 768);
+    if (window.innerWidth > 768) setMenuOpen(false); // Close menu if resized to desktop
+  };
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
 
   const fetchFollowing = async () => {
     try {
@@ -1070,8 +1080,37 @@ const FeedNavbar = () => {
           </div>
         )}
       </div>
+      {isMobile ? (
+  <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>☰</div>
+) : (
+  <div className="right-section">
+    <Link to="/network" className="nav-icon">My Network</Link>
+    <Link to="/chat-list" className="nav-icon">Messaging</Link>
+    <Link to="/notifications" className="nav-icon" style={{ position: 'relative' }}>
+      Notifications
+      {unread > 0 && <span className="notif-badge">{unread}</span>}
+    </Link>
+    <Link to="/my-posts" className="nav-icon">My Posts</Link>
+    <div style={{ position: 'relative' }}>
+      <img
+        src={profilePhoto}
+        alt="profile"
+        className="profile-photo"
+        onClick={() => setProfileOpen(p => !p)}
+      />
+      {profileOpen && (
+        <div className="profile-menu">
+          <label htmlFor="newPic" className="menu-item">Change Photo</label>
+          <input id="newPic" type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePhotoChange} />
+          <button className="remove-btn" onClick={handleRemovePhoto}>Remove Photo</button>
+        </div>
+      )}
+    </div>
+  </div>
+)}
 
-      <div className="right-section" style={{ display: 'flex', gap: '18px', alignItems: 'center' }}>
+
+      {/* <div className="right-section" style={{ display: 'flex', gap: '18px', alignItems: 'center' }}>
         <Link to="/network" className="nav-icon" style={{ textDecoration: 'none', color: 'inherit' }}>
           My Network
         </Link>
@@ -1099,7 +1138,18 @@ const FeedNavbar = () => {
             </div>
           )}
         </div>
+      </div> */}
+       {menuOpen && isMobile && (
+      <div className="mobile-menu">
+        <Link to="/network">My Network</Link>
+        <Link to="/chat-list">Messaging</Link>
+        <Link to="/notifications">
+          Notifications {unread > 0 && <span className="notif-badge">{unread}</span>}
+        </Link>
+        <Link to="/my-posts">My Posts</Link>
+        <Link to="/">Logout</Link>
       </div>
+    )}
 
       {/* ✅ Show profile popup when clicked */}
       {popupUser && (

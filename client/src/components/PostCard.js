@@ -1120,7 +1120,8 @@ const toggleSave = async () => {
         {isMyPost ? (
           <button className="danger" onClick={handleDelete}>Delete</button>
         ) : (
-          <button onClick={toggleSave}>{saved ? 'Unsave' : 'Save'}</button>
+          <button className='save-btn'
+           onClick={toggleSave}>{saved ? 'Unsave' : 'Save'}</button>
 
         )}
       </div>

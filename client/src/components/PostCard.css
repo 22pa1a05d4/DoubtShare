@@ -6,7 +6,7 @@
   padding: 1rem;
   margin-bottom: 1.5rem;
 }
-/* ✅ SHARE MODAL CONTAINER */
+
 .share-modal {
   position: fixed;
   top: 50%;
@@ -25,7 +25,6 @@
   flex-direction: column;
 }
 
-/* ✅ SEARCH BAR INSIDE MODAL */
 .share-search {
   width: 100%;
   padding: 10px 12px;
@@ -35,7 +34,7 @@
   font-size: 15px;
 }
 
-/* ✅ USER LIST AREA */
+
 .share-user-list {
   list-style: none;
   padding: 0;
@@ -144,11 +143,7 @@
 }
 
 
-.post-actions {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
-}
+
 
 .post-actions button {
   background: #eee;
@@ -355,4 +350,85 @@
 .share-actions button:last-child {
   background-color: #eee;
   color: #333;
+}
+.post-actions {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Make all buttons same size and color */
+.post-actions button {
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  background-color: #1976d2;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  text-align: center;
+}
+
+/* Hover effect */
+.post-actions button:hover {
+  background-color: #1255ac;
+}
+
+/* Red danger button (delete only) */
+.post-actions .danger {
+  background-color: #e53935;
+}
+
+.post-actions .danger:hover {
+  background-color: #c62828;
+}
+
+/* Responsive: stack on mobile */
+@media (max-width: 600px) {
+  .post-actions {
+    flex-direction: column;
+  }
+
+  .post-actions button {
+    width: 100%;
+  }
+}
+.post-actions {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.post-actions button {
+  flex: 1 1 30%;
+  padding: 8px;
+  font-size: 14px;
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: center;
+  transition: background 0.2s;
+}
+
+.post-actions button:hover {
+  background-color: #1253a4;
+}
+
+/* For delete buttons if shown */
+.post-actions .danger {
+  background: #e53935;
+}
+.post-actions .danger:hover {
+  background: #c62828;
 }
