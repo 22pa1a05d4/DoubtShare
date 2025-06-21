@@ -156,6 +156,17 @@ router.delete('/thread/:user1/:user2', async (req, res) => {
     res.status(500).json({ error: 'Failed to delete thread' });
   }
 });
+// Bulk delete selected messages
+router.post('/delete-multiple', async (req, res) => {
+  const { ids } = req.body;
+  try {
+    await Message.deleteMany({ _id: { $in: ids } });
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('Delete multiple error:', err);
+    res.status(500).json({ success: false });
+  }
+});
 
 /* -------------------------------------------------
    Send TEXT                       POST /api/messages
