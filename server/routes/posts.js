@@ -114,6 +114,8 @@ const express  = require('express');
 const router   = express.Router();
 const upload   = require('../middleware/upload');
 const Post     = require('../models/Post');
+const User = require('../models/User'); // ✅ Add this
+
 
 /* Helper: turn filename → public URL fragment */
 const makeUrl = (fn) => (fn ? `/uploads/${fn}` : null);
@@ -121,6 +123,48 @@ const makeUrl = (fn) => (fn ? `/uploads/${fn}` : null);
 /* ───────────────────────────────
    CREATE POST  (text + optional img)
 ──────────────────────────────── */
+router.post('/save/:email', async (req, res) => {
+  const { email } = req.params;
+  const { postId } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    console.log('Saving postId:', postId, 'for user:', user.email);
+
+    if (!user.savedPosts.includes(postId)) {
+      user.savedPosts.push(postId);
+      await user.save();
+    }
+
+    res.status(200).json({ message: 'Post saved' });
+  } catch (err) {
+    console.error('Save post error:', err);
+    res.status(500).json({ message: 'Failed to save post' });
+  }
+});
+
+
+// 🔥 Get saved posts
+router.get('/saved/:email', async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const user = await User.findOne({ email }).populate('savedPosts');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.json(user.savedPosts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch saved posts' });
+  }
+});
+
+module.exports = router;
 router.post('/create', upload.single('image'), async (req, res) => {
   try {
     const { description, email } = req.body;
@@ -144,6 +188,40 @@ router.post('/create', upload.single('image'), async (req, res) => {
 /* ───────────────────────────────
    MY POSTS
 ──────────────────────────────── */
+// Check if post is saved
+router.get('/isSaved/:email/:postId', async (req, res) => {
+  const { email, postId } = req.params;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ saved: false });
+
+    const isSaved = user.savedPosts.includes(postId);
+    res.json({ saved: isSaved });
+  } catch (err) {
+    console.error('Error checking saved status:', err);
+    res.status(500).json({ saved: false });
+  }
+});
+
+// Unsave post
+router.post('/unsave/:email', async (req, res) => {
+  const { email } = req.params;
+  const { postId } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.savedPosts = user.savedPosts.filter(id => id.toString() !== postId);
+    await user.save();
+
+    res.status(200).json({ message: 'Post unsaved' });
+  } catch (err) {
+    console.error('Unsave error:', err);
+    res.status(500).json({ message: 'Failed to unsave post' });
+  }
+});
+
 router.get('/my-posts/:email', async (req, res) => {
   try {
     const posts = await Post.find({ email: req.params.email })

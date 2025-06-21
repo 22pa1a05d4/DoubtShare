@@ -13,10 +13,7 @@ const postSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  likes: {
-    type: [String], // array of user emails who liked
-    default: []
-  },
+ savedPosts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
   comments: {
     type: [
       {

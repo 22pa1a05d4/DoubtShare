@@ -9,7 +9,7 @@ import NotificationsPage from './pages/NotificationsPage';
 import MyNetworkPage from './pages/MyNetworkPage';
 import ChatListPage from './pages/ChatListPage';
 import SinglePostPage from './pages/SinglePostPage';
-
+import SavedPosts from './pages/SavedPosts';
 import ChatPage from './pages/ChatPage';
 
 
@@ -27,6 +27,8 @@ function App() {
         <Route path="/posts/:postId" element={<SinglePostPage />} />
         <Route path="/chat/:targetEmail" element={<ChatPage />} />
 <Route path="/chat-list" element={<ChatListPage />} />
+<Route path="/saved-posts" element={<SavedPosts />} />
+
       </Routes>
     </Router>
   );

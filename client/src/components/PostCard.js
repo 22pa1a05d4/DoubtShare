@@ -927,6 +927,7 @@
 
 import React, { useState } from 'react';
 import './PostCard.css';
+import { useEffect } from 'react';
 
 const PostCard = ({ post, refreshFeed, onDelete }) => {
   const [showAnswers, setShowAnswers] = useState(false);
@@ -942,6 +943,18 @@ const PostCard = ({ post, refreshFeed, onDelete }) => {
 
   const currentEmail = localStorage.getItem('userEmail');
   const isMyPost = currentEmail === post.email;
+useEffect(() => {
+  const checkIfSaved = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/posts/isSaved/${currentEmail}/${post._id}`);
+      const data = await res.json();
+      setSaved(data.saved);
+    } catch (err) {
+      console.error('Failed to check saved status', err);
+    }
+  };
+  checkIfSaved();
+}, [currentEmail, post._id]);
 
   const getImgSrc = () => {
     if (!post.imageUrl) return null;
@@ -1035,20 +1048,25 @@ const PostCard = ({ post, refreshFeed, onDelete }) => {
     }
   };
 
-  const toggleSave = async () => {
-    try {
-      const res = await fetch(`http://localhost:5000/api/posts/save/${currentEmail}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ postId: post._id }),
-      });
-      if (res.ok) {
-        setSaved((prev) => !prev);
-      }
-    } catch (err) {
-      console.error('Failed to save post', err);
+const toggleSave = async () => {
+  const url = saved
+    ? `http://localhost:5000/api/posts/unsave/${currentEmail}`
+    : `http://localhost:5000/api/posts/save/${currentEmail}`;
+
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ postId: post._id }),
+    });
+    if (res.ok) {
+      setSaved(prev => !prev);
     }
-  };
+  } catch (err) {
+    console.error('Failed to toggle save', err);
+  }
+};
+
 
   const sharePost = async () => {
     if (selectedUsersToSend.length === 0) return;
@@ -1102,7 +1120,8 @@ const PostCard = ({ post, refreshFeed, onDelete }) => {
         {isMyPost ? (
           <button className="danger" onClick={handleDelete}>Delete</button>
         ) : (
-          <button onClick={toggleSave}>{saved ? 'Saved' : 'Save'}</button>
+          <button onClick={toggleSave}>{saved ? 'Unsave' : 'Save'}</button>
+
         )}
       </div>
 
