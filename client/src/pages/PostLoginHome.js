@@ -1030,7 +1030,8 @@ const PostLoginHome = () => {
                <Link to="/my-posts"  style={{ textDecoration:'none', color:'#0073b1' }}>
        My Post
         </Link>
-              <p>Logout</p>
+        <br></br>
+            <Link to="/" style={{ textDecoration:'none', color:'#0073b1' }}>Logout</Link>
             </div>
           </div>
         </aside>

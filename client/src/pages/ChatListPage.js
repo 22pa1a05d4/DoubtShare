@@ -930,6 +930,24 @@ export default function ChatListPage () {
     const data  = await res.json();
     setMsgs(data);
   };
+const deleteChat = async () => {
+  if (!window.confirm(`Delete all messages with ${withUser}?`)) return;
+
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/messages/thread/${me}/${withUser}`,
+      { method: 'DELETE' }
+    );
+    if (res.ok) {
+      setMsgs([]); // Clear chat window
+      alert('Chat deleted successfully!');
+    } else {
+      alert('Failed to delete chat');
+    }
+  } catch (err) {
+    console.error('Delete chat failed:', err);
+  }
+};
 
   /* ─────────────────── on mount: load chat list & first thread ─────────────────── */
   useEffect(() => {
@@ -986,6 +1004,22 @@ export default function ChatListPage () {
       setText('');
     }
   };
+const deleteMessage = async (id) => {
+  if (!window.confirm('Delete this message?')) return;
+
+  try {
+    const res = await fetch(`http://localhost:5000/api/messages/${id}`, {
+      method: 'DELETE',
+    });
+    if (res.ok) {
+      setMsgs(prev => prev.filter(m => m._id !== id));
+    } else {
+      alert('Failed to delete message');
+    }
+  } catch (err) {
+    console.error('Delete message error:', err);
+  }
+};
 
   const sendFile = async (file) => {
     if (!file || !withUser) return;
@@ -1030,6 +1064,9 @@ export default function ChatListPage () {
             {/* header */}
             <header className="chat-head">
               Chat with {withUser}
+              <div style={{ float: 'right' }}>
+    <button onClick={deleteChat} style={{ marginRight: '10px' }}>🗑️ Delete Chat</button>
+  </div>
             </header>
 
             {/* message area */}
@@ -1052,7 +1089,14 @@ export default function ChatListPage () {
                   ) : (
                     m.text
                   )}
-
+                   {m.sender === me && (
+      <span
+        style={{ color: 'red', float: 'right', cursor: 'pointer' }}
+        onClick={() => deleteMessage(m._id)}
+      >
+        ❌
+      </span>
+    )}
                   <span className="t">
                     {new Date(m.time).toLocaleTimeString()}
                   </span>

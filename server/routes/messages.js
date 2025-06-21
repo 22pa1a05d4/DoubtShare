@@ -140,6 +140,22 @@ router.get('/:user1/:user2', async (req, res) => {
 
   res.json(thread);
 });
+// DELETE /api/messages/thread/:user1/:user2
+router.delete('/thread/:user1/:user2', async (req, res) => {
+  try {
+    const { user1, user2 } = req.params;
+    const result = await Message.deleteMany({
+      $or: [
+        { sender: user1, receiver: user2 },
+        { sender: user2, receiver: user1 }
+      ]
+    });
+    res.json({ success: true, deletedCount: result.deletedCount });
+  } catch (err) {
+    console.error('Delete thread error', err);
+    res.status(500).json({ error: 'Failed to delete thread' });
+  }
+});
 
 /* -------------------------------------------------
    Send TEXT                       POST /api/messages
@@ -246,6 +262,18 @@ router.post('/share-post', async (req, res) => {
     res.status(500).json({ error:'Share failed' });
   }
 });
+// DELETE /api/messages/:id
+router.delete('/:id', async (req, res) => {
+  try {
+    const deleted = await Message.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ error: 'Message not found' });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete message error', err);
+    res.status(500).json({ error: 'Delete failed' });
+  }
+});
+
 router.post('/send', async (req, res) => {
   const { sender, receiver, text, media, mimeType } = req.body;
 
