@@ -1098,33 +1098,92 @@ const toggleSave = async () => {
   };
 
   return (
+    // <div className="post-card">
+    //   {getImgSrc() && (
+    //     <img
+    //       src={getImgSrc()}
+    //       alt="Post"
+    //       className="post-image"
+    //       onError={(e) => (e.target.style.display = 'none')}
+    //     />
+    //   )}
+
+    //   {post.description && <p className="post-description">{post.description}</p>}
+
+    //   <div className="post-actions">
+    //     <button onClick={() => setShowAnswers((v) => !v)}>
+    //       {showAnswers ? 'Hide Answers' : isMyPost ? 'View Answers' : 'View / Answer'}
+    //     </button>
+
+    //     <button onClick={fetchShareUsers}>Share</button>
+
+    //     {isMyPost ? (
+    //       <button className="danger" onClick={handleDelete}>Delete</button>
+    //     ) : (
+    //       <button className='save-btn'
+    //        onClick={toggleSave}>{saved ? 'Unsave' : 'Save'}</button>
+
+    //     )}
+    //   </div>
     <div className="post-card">
-      {getImgSrc() && (
-        <img
-          src={getImgSrc()}
-          alt="Post"
-          className="post-image"
-          onError={(e) => (e.target.style.display = 'none')}
-        />
-      )}
+  <div className="post-header">
+    <img
+      src={post.author?.profilePhoto || "/avatar.png"}
+      alt="profile"
+      className="profile-pic"
+    />
+    <div className="author-info">
+      <strong>{post.author?.name || 'Anonymous'}</strong>
+      <p>{post.author?.branch || 'Dept'} • {post.author?.year || 'Year'}</p>
+    </div>
+    <button className="follow-btn">Follow</button>
+  </div>
 
-      {post.description && <p className="post-description">{post.description}</p>}
+  {/* Subject Badge */}
+  {post.subject && (
+    <span className="subject-badge">{post.subject}</span>
+  )}
 
-      <div className="post-actions">
-        <button onClick={() => setShowAnswers((v) => !v)}>
-          {showAnswers ? 'Hide Answers' : isMyPost ? 'View Answers' : 'View / Answer'}
-        </button>
+  {/* Title */}
+  {post.title && (
+    <h3 className="post-title">{post.title}</h3>
+  )}
 
-        <button onClick={fetchShareUsers}>Share</button>
+  {/* Description */}
+  {post.description && (
+    <p className="post-description">{post.description}</p>
+  )}
 
-        {isMyPost ? (
-          <button className="danger" onClick={handleDelete}>Delete</button>
-        ) : (
-          <button className='save-btn'
-           onClick={toggleSave}>{saved ? 'Unsave' : 'Save'}</button>
+  {/* Tags */}
+  <div className="tag-list">
+    {post.tags?.map((tag, i) => (
+      <span key={i} className="tag">#{tag}</span>
+    ))}
+  </div>
 
-        )}
-      </div>
+  {/* Image (optional) */}
+  {getImgSrc() && (
+    <img
+      src={getImgSrc()}
+      alt="post"
+      className="post-image"
+    />
+  )}
+
+  {/* Footer */}
+  <div className="post-footer">
+    <span>{new Date(post.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+    <button onClick={() => setShowAnswers((v) => !v)}>
+      💬 {answers.length} Answers
+    </button>
+    <button className="save-btn" onClick={toggleSave}>
+      {saved ? 'Unsave' : 'Save'}
+    </button>
+    <button onClick={fetchShareUsers}>Share</button>
+    {isMyPost && (
+      <button className="danger" onClick={handleDelete}>Delete</button>
+    )}
+  </div>
 
       {showAnswers && (
         <div className="answer-section">
