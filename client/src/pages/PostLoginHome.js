@@ -1080,7 +1080,7 @@ const PostLoginHome = () => {
       </div>
 
       {/* MODAL */}
-      {showModal && (
+      {/* {showModal && (
         <div className="modal-overlay">
           <div className="modal-content">
             <h3>Add Doubt Post</h3>
@@ -1101,7 +1101,59 @@ const PostLoginHome = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
+      {/* MODAL */}
+{showModal && (
+  <div className="modal-overlay">
+    <div className="modal-content fancy-modal">
+      <h2>Post Your Doubt</h2>
+
+      {/* TITLE */}
+      <input
+        type="text"
+        className="fancy-input"
+        placeholder="What's your doubt about?"
+        value={newPost.title || ''}
+        onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+      />
+
+      {/* DESCRIPTION */}
+      <textarea
+        className="fancy-textarea"
+        placeholder="Explain your doubt in detail..."
+        value={newPost.description}
+        onChange={(e) => setNewPost({ ...newPost, description: e.target.value })}
+      />
+
+      {/* TAGS */}
+      <input
+        type="text"
+        className="fancy-input"
+        placeholder="Add tags (e.g. calculus, integration)"
+        value={newPost.tags || ''}
+        onChange={(e) => setNewPost({ ...newPost, tags: e.target.value })}
+      />
+
+      {/* IMAGE UPLOAD */}
+      <label className="upload-btn">
+        📎 Add Media
+        <input
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={(e) => setNewPost({ ...newPost, image: e.target.files[0] })}
+        />
+      </label>
+
+      {/* ACTION BUTTONS */}
+      <div className="modal-actions fancy-buttons">
+        <button className="post-btn" onClick={handleSubmitPost}>Post Doubt</button>
+        <button className="cancel-btn" onClick={() => setShowModal(false)}>Cancel</button>
+      </div>
+    </div>
+  </div>
+)}
+
 
       <button className="fab" onClick={() => setShowModal(true)}>+</button>
     </div>

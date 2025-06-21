@@ -218,3 +218,61 @@
   color: #e53935;
   font-weight: bold;
 }
+.fancy-modal {
+  padding: 25px;
+  background: #fff;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 95%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+}
+
+.fancy-input,
+.fancy-textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  resize: none;
+}
+
+.fancy-textarea {
+  height: 100px;
+}
+
+.upload-btn {
+  display: inline-block;
+  background-color: #f0f0f0;
+  color: #333;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.fancy-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.post-btn {
+  background-color: #0a66c2;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background-color: #e0e0e0;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
