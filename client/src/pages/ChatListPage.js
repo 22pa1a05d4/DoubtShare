@@ -1144,6 +1144,510 @@
 //   );
 // }
 
+
+
+// import React, { useEffect, useRef, useState } from 'react';
+// import { useNavigate, useLocation } from 'react-router-dom';
+// import './ChatListPage.css';
+
+// const mimeIsImg = m => m?.startsWith('image/');
+// const mimeIsVideo = m => m?.startsWith('video/');
+// const mimeIsAudio = m => m?.startsWith('audio/');
+
+// export default function ChatListPage() {
+//   const nav = useNavigate();
+//   const loc = useLocation();
+//   const me = localStorage.getItem('userEmail')?.toLowerCase();
+//   const preSelected = new URLSearchParams(loc.search).get('selected')?.toLowerCase();
+
+//   const [threads, setThreads] = useState([]);
+//   const [withUser, setWithUser] = useState(null);
+//   const [msgs, setMsgs] = useState([]);
+//   const [text, setText] = useState('');
+//   const [selectedMsgIds, setSelectedMsgIds] = useState([]);
+
+//   const fileRef = useRef(null);
+//   const bottomRef = useRef(null);
+
+//   const toggleSelectMsg = (id) => {
+//     setSelectedMsgIds((prev) =>
+//       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+//     );
+//   };
+
+//   const loadThread = async (partnerEmail) => {
+//     setWithUser(partnerEmail);
+//     setSelectedMsgIds([]);
+//     const res = await fetch(`http://localhost:5000/api/messages/${me}/${partnerEmail}`);
+//     const data = await res.json();
+//     setMsgs(data);
+//   };
+
+//   const deleteChat = async () => {
+//     if (!window.confirm(`Delete all messages with ${withUser}?`)) return;
+//     try {
+//       const res = await fetch(`http://localhost:5000/api/messages/thread/${me}/${withUser}`, {
+//         method: 'DELETE'
+//       });
+//       if (res.ok) {
+//         setMsgs([]);
+//         setSelectedMsgIds([]);
+//         alert('Chat deleted successfully!');
+//       } else {
+//         alert('Failed to delete chat');
+//       }
+//     } catch (err) {
+//       console.error('Delete chat failed:', err);
+//     }
+//   };
+
+//   const deleteMessage = async (id) => {
+//     if (!window.confirm('Delete this message?')) return;
+//     try {
+//       const res = await fetch(`http://localhost:5000/api/messages/${id}`, {
+//         method: 'DELETE',
+//       });
+//       if (res.ok) {
+//         setMsgs(prev => prev.filter(m => m._id !== id));
+//       } else {
+//         alert('Failed to delete message');
+//       }
+//     } catch (err) {
+//       console.error('Delete message error:', err);
+//     }
+//   };
+
+//   const deleteSelectedMessages = async () => {
+//     if (selectedMsgIds.length === 0) return;
+//     if (!window.confirm(`Delete ${selectedMsgIds.length} selected messages?`)) return;
+
+//     try {
+//       const res = await fetch('http://localhost:5000/api/messages/delete-multiple', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ ids: selectedMsgIds }),
+//       });
+
+//       if (res.ok) {
+//         setMsgs(prev => prev.filter(m => !selectedMsgIds.includes(m._id)));
+//         setSelectedMsgIds([]);
+//       } else {
+//         alert('Failed to delete');
+//       }
+//     } catch (err) {
+//       console.error('Delete multiple error', err);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (!me) { nav('/login'); return; }
+
+//     const bootstrap = async () => {
+//       const resPartners = await fetch(`http://localhost:5000/api/messages/chats/${me}`);
+//       const partnerEmails = await resPartners.json();
+
+//       const resUsers = await fetch('http://localhost:5000/api/auth/all-users');
+//       const allUsers = await resUsers.json();
+//       let list = partnerEmails
+//         .map(e => allUsers.find(u => u.email.toLowerCase() === e))
+//         .filter(Boolean);
+
+//       if (preSelected) {
+//         const selUser = allUsers.find(u => u.email.toLowerCase() === preSelected);
+//         if (selUser && !list.find(u => u.email.toLowerCase() === preSelected)) {
+//           list = [selUser, ...list];
+//         }
+//       }
+//       setThreads(list);
+//       const first = preSelected || list?.[0]?.email;
+//       if (first) loadThread(first);
+//     };
+
+//     bootstrap();
+//   }, [me]);
+
+//   useEffect(() => {
+//     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+//   }, [msgs]);
+
+//   const sendText = async () => {
+//     if (!text.trim() || !withUser) return;
+//     const payload = { sender: me, receiver: withUser, text };
+//     const res = await fetch('http://localhost:5000/api/messages/send', {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify(payload)
+//     });
+//     if (res.ok) {
+//       setMsgs(prev => [...prev, { ...payload, time: new Date() }]);
+//       setText('');
+//     }
+//   };
+
+//   const sendFile = async (file) => {
+//     if (!file || !withUser) return;
+//     const fd = new FormData();
+//     fd.append('file', file);
+//     fd.append('sender', me);
+//     fd.append('receiver', withUser);
+//     const res = await fetch('http://localhost:5000/api/messages/file', {
+//       method: 'POST',
+//       body: fd
+//     });
+//     if (res.ok) {
+//       const saved = await res.json();
+//       setMsgs(prev => [...prev, saved]);
+//     }
+//   };
+
+//   return (
+//     <div className="chat-wrap">
+
+//       <aside className="chat-side">
+//         <h3>Messages</h3>
+//         {threads.map(u => (
+//           <div key={u.email}
+//             className={`chat-user ${withUser === u.email ? 'active' : ''}`}
+//             onClick={() => loadThread(u.email)}>
+//             {u.name || u.email}
+//           </div>
+//         ))}
+//       </aside>
+
+//       <section className="chat-main">
+//         {!withUser ? (
+//           <div className="chat-placeholder">Select a chat to start messaging</div>
+//         ) : (
+//           <>
+//             <header className="chat-head">
+//               Chat with {withUser}
+//               <div style={{ float: 'right' }}>
+//                 <button onClick={deleteChat} style={{ marginRight: '10px' }}>🗑️ Delete Chat</button>
+//               </div>
+//             </header>
+
+//             {selectedMsgIds.length > 0 && (
+//               <div style={{ textAlign: 'right', margin: '8px 0' }}>
+//                 <button onClick={deleteSelectedMessages} className="danger">
+//                   🗑️ Delete {selectedMsgIds.length} Selected
+//                 </button>
+//               </div>
+//             )}
+
+//             <div className="chat-body">
+//               {msgs.map((m, i) => (
+//                 <div key={i} className={`bubble ${m.sender === me ? 'me' : 'them'}`}>
+//                   <input
+//                     type="checkbox"
+//                     checked={selectedMsgIds.includes(m._id)}
+//                     onChange={() => toggleSelectMsg(m._id)}
+//                     style={{ marginRight: '8px', float: 'left' }}
+//                   />
+//                   {m.mimeType ? (
+//                     mimeIsImg(m.mimeType) ? (
+//                       <img src={m.media || m.url} alt="img" className="bubble-img" />
+//                     ) : mimeIsVideo(m.mimeType) ? (
+//                       <video src={m.media || m.url} controls className="bubble-media" />
+//                     ) : mimeIsAudio(m.mimeType) ? (
+//                       <audio src={m.media || m.url} controls />
+//                     ) : (
+//                       <a href={m.media || m.url} target="_blank" rel="noreferrer">
+//                         📎 {m.originalName || 'file'}
+//                       </a>
+//                     )
+//                   ) : (
+//                     m.text
+//                   )}
+//                   {m.sender === me && (
+//                     <span
+//                       style={{ color: 'red', float: 'right', cursor: 'pointer' }}
+//                       onClick={() => deleteMessage(m._id)}
+//                     >
+//                       ❌
+//                     </span>
+//                   )}
+//                   <span className="t">{new Date(m.time).toLocaleTimeString()}</span>
+//                 </div>
+//               ))}
+//               <div ref={bottomRef} />
+//             </div>
+
+//             <footer className="chat-input-row">
+//               <input
+//                 ref={fileRef}
+//                 type="file"
+//                 style={{ display: 'none' }}
+//                 onChange={e => { sendFile(e.target.files[0]); e.target.value = ''; }}
+//               />
+//               <button className="pin" onClick={() => fileRef.current.click()}>📎</button>
+//               <textarea
+//                 className="msg-box"
+//                 rows={2}
+//                 value={text}
+//                 placeholder="Type message…"
+//                 onChange={e => setText(e.target.value)}
+//                 onKeyDown={e => {
+//                   if (e.key === 'Enter' && !e.shiftKey) {
+//                     e.preventDefault();
+//                     sendText();
+//                   }
+//                 }}
+//               />
+//               <button className="send" onClick={sendText}>Send</button>
+//             </footer>
+//           </>
+//         )}
+//       </section>
+//     </div>
+//   );
+// }
+
+// import React, { useEffect, useRef, useState } from 'react';
+// import { useNavigate, useLocation } from 'react-router-dom';
+// import './ChatListPage.css';
+
+// const mimeIsImg = m => m?.startsWith('image/');
+// const mimeIsVideo = m => m?.startsWith('video/');
+// const mimeIsAudio = m => m?.startsWith('audio/');
+
+// export default function ChatListPage() {
+//   const nav = useNavigate();
+//   const loc = useLocation();
+//   const me = localStorage.getItem('userEmail')?.toLowerCase();
+//   const preSelected = new URLSearchParams(loc.search).get('selected')?.toLowerCase();
+
+//   const [threads, setThreads] = useState([]);
+//   const [withUser, setWithUser] = useState(null);
+//   const [msgs, setMsgs] = useState([]);
+//   const [text, setText] = useState('');
+//   const [selectedMsgIds, setSelectedMsgIds] = useState([]);
+//   const [selectionMode, setSelectionMode] = useState(false);
+
+//   const fileRef = useRef(null);
+//   const bottomRef = useRef(null);
+
+//   const toggleSelectMsg = (id) => {
+//     if (!selectionMode) {
+//       setSelectionMode(true);
+//       setSelectedMsgIds([id]);
+//     } else {
+//       setSelectedMsgIds(prev =>
+//         prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
+//       );
+//     }
+//   };
+
+//   const clearSelection = () => {
+//     setSelectionMode(false);
+//     setSelectedMsgIds([]);
+//   };
+
+//   const loadThread = async (partnerEmail) => {
+//     setWithUser(partnerEmail);
+//     clearSelection();
+//     const res = await fetch(`http://localhost:5000/api/messages/${me}/${partnerEmail}`);
+//     const data = await res.json();
+//     setMsgs(data);
+//   };
+
+//   const deleteChat = async () => {
+//     if (!window.confirm(`Delete all messages with ${withUser}?`)) return;
+//     try {
+//       const res = await fetch(`http://localhost:5000/api/messages/thread/${me}/${withUser}`, {
+//         method: 'DELETE'
+//       });
+//       if (res.ok) {
+//         setMsgs([]);
+//         clearSelection();
+//         alert('Chat deleted successfully!');
+//       } else {
+//         alert('Failed to delete chat');
+//       }
+//     } catch (err) {
+//       console.error('Delete chat failed:', err);
+//     }
+//   };
+
+//   const deleteSelectedMessages = async () => {
+//     if (selectedMsgIds.length === 0) return;
+//     if (!window.confirm(`Delete ${selectedMsgIds.length} selected messages?`)) return;
+
+//     try {
+//       const res = await fetch('http://localhost:5000/api/messages/delete-multiple', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ ids: selectedMsgIds }),
+//       });
+
+//       if (res.ok) {
+//         setMsgs(prev => prev.filter(m => !selectedMsgIds.includes(m._id)));
+//         clearSelection();
+//       } else {
+//         alert('Failed to delete');
+//       }
+//     } catch (err) {
+//       console.error('Delete multiple error', err);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (!me) { nav('/login'); return; }
+
+//     const bootstrap = async () => {
+//       const resPartners = await fetch(`http://localhost:5000/api/messages/chats/${me}`);
+//       const partnerEmails = await resPartners.json();
+
+//       const resUsers = await fetch('http://localhost:5000/api/auth/all-users');
+//       const allUsers = await resUsers.json();
+//       let list = partnerEmails
+//         .map(e => allUsers.find(u => u.email.toLowerCase() === e))
+//         .filter(Boolean);
+
+//       if (preSelected) {
+//         const selUser = allUsers.find(u => u.email.toLowerCase() === preSelected);
+//         if (selUser && !list.find(u => u.email.toLowerCase() === preSelected)) {
+//           list = [selUser, ...list];
+//         }
+//       }
+//       setThreads(list);
+//       const first = preSelected || list?.[0]?.email;
+//       if (first) loadThread(first);
+//     };
+
+//     bootstrap();
+//   }, [me]);
+
+//   useEffect(() => {
+//     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+//   }, [msgs]);
+
+//   const sendText = async () => {
+//     if (!text.trim() || !withUser) return;
+//     const payload = { sender: me, receiver: withUser, text };
+//     const res = await fetch('http://localhost:5000/api/messages/send', {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify(payload)
+//     });
+//     if (res.ok) {
+//       setMsgs(prev => [...prev, { ...payload, time: new Date() }]);
+//       setText('');
+//     }
+//   };
+
+//   const sendFile = async (file) => {
+//     if (!file || !withUser) return;
+//     const fd = new FormData();
+//     fd.append('file', file);
+//     fd.append('sender', me);
+//     fd.append('receiver', withUser);
+//     const res = await fetch('http://localhost:5000/api/messages/file', {
+//       method: 'POST',
+//       body: fd
+//     });
+//     if (res.ok) {
+//       const saved = await res.json();
+//       setMsgs(prev => [...prev, saved]);
+//     }
+//   };
+
+//   return (
+//     <div className="chat-wrap">
+//       <aside className="chat-side">
+//         <h3>Messages</h3>
+//         {threads.map(u => (
+//           <div key={u.email}
+//             className={`chat-user ${withUser === u.email ? 'active' : ''}`}
+//             onClick={() => loadThread(u.email)}>
+//             {u.name || u.email}
+//           </div>
+//         ))}
+//       </aside>
+
+//       <section className="chat-main">
+//         {!withUser ? (
+//           <div className="chat-placeholder">Select a chat to start messaging</div>
+//         ) : (
+//           <>
+//             <header className="chat-head">
+//               {selectionMode ? (
+//                 <div>
+//                   <button onClick={deleteSelectedMessages}>🗑️ Delete Selected</button>
+//                   <button onClick={clearSelection}>❌ Cancel</button>
+//                 </div>
+//               ) : (
+//                 <>
+//                   Chat with {withUser}
+//                   <button onClick={deleteChat} style={{ float: 'right' }}>🗑️ Delete Chat</button>
+//                 </>
+//               )}
+//             </header>
+
+//             <div className="chat-body">
+//               {msgs.map((m, i) => (
+//                 <div key={i}
+//                   className={`bubble ${m.sender === me ? 'me' : 'them'} ${selectedMsgIds.includes(m._id) ? 'selected' : ''}`}
+//                   onClick={() => toggleSelectMsg(m._id)}
+//                 >
+//                   {selectionMode && (
+//                     <input
+//                       type="checkbox"
+//                       checked={selectedMsgIds.includes(m._id)}
+//                       readOnly
+//                       style={{ float: 'left', marginRight: '8px' }}
+//                     />
+//                   )}
+//                   {m.mimeType ? (
+//                     mimeIsImg(m.mimeType) ? (
+//                       <img src={m.media || m.url} alt="img" className="bubble-img" />
+//                     ) : mimeIsVideo(m.mimeType) ? (
+//                       <video src={m.media || m.url} controls className="bubble-media" />
+//                     ) : mimeIsAudio(m.mimeType) ? (
+//                       <audio src={m.media || m.url} controls />
+//                     ) : (
+//                       <a href={m.media || m.url} target="_blank" rel="noreferrer">
+//                         📎 {m.originalName || 'file'}
+//                       </a>
+//                     )
+//                   ) : (
+//                     m.text
+//                   )}
+//                   <span className="t">{new Date(m.time).toLocaleTimeString()}</span>
+//                 </div>
+//               ))}
+//               <div ref={bottomRef} />
+//             </div>
+
+//             <footer className="chat-input-row">
+//               <input
+//                 ref={fileRef}
+//                 type="file"
+//                 style={{ display: 'none' }}
+//                 onChange={e => { sendFile(e.target.files[0]); e.target.value = ''; }}
+//               />
+//               <button className="pin" onClick={() => fileRef.current.click()}>📎</button>
+//               <textarea
+//                 className="msg-box"
+//                 rows={2}
+//                 value={text}
+//                 placeholder="Type message…"
+//                 onChange={e => setText(e.target.value)}
+//                 onKeyDown={e => {
+//                   if (e.key === 'Enter' && !e.shiftKey) {
+//                     e.preventDefault();
+//                     sendText();
+//                   }
+//                 }}
+//               />
+//               <button className="send" onClick={sendText}>Send</button>
+//             </footer>
+//           </>
+//         )}
+//       </section>
+//     </div>
+//   );
+// }
+
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './ChatListPage.css';
@@ -1163,19 +1667,30 @@ export default function ChatListPage() {
   const [msgs, setMsgs] = useState([]);
   const [text, setText] = useState('');
   const [selectedMsgIds, setSelectedMsgIds] = useState([]);
+  const [selectionMode, setSelectionMode] = useState(false);
 
   const fileRef = useRef(null);
   const bottomRef = useRef(null);
 
   const toggleSelectMsg = (id) => {
-    setSelectedMsgIds((prev) =>
+    setSelectedMsgIds(prev =>
       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
     );
   };
 
+  const handleMsgDoubleClick = (id) => {
+    setSelectionMode(true);
+    setSelectedMsgIds([id]);
+  };
+
+  const clearSelection = () => {
+    setSelectionMode(false);
+    setSelectedMsgIds([]);
+  };
+
   const loadThread = async (partnerEmail) => {
     setWithUser(partnerEmail);
-    setSelectedMsgIds([]);
+    clearSelection();
     const res = await fetch(`http://localhost:5000/api/messages/${me}/${partnerEmail}`);
     const data = await res.json();
     setMsgs(data);
@@ -1189,29 +1704,13 @@ export default function ChatListPage() {
       });
       if (res.ok) {
         setMsgs([]);
-        setSelectedMsgIds([]);
+        clearSelection();
         alert('Chat deleted successfully!');
       } else {
         alert('Failed to delete chat');
       }
     } catch (err) {
       console.error('Delete chat failed:', err);
-    }
-  };
-
-  const deleteMessage = async (id) => {
-    if (!window.confirm('Delete this message?')) return;
-    try {
-      const res = await fetch(`http://localhost:5000/api/messages/${id}`, {
-        method: 'DELETE',
-      });
-      if (res.ok) {
-        setMsgs(prev => prev.filter(m => m._id !== id));
-      } else {
-        alert('Failed to delete message');
-      }
-    } catch (err) {
-      console.error('Delete message error:', err);
     }
   };
 
@@ -1228,7 +1727,7 @@ export default function ChatListPage() {
 
       if (res.ok) {
         setMsgs(prev => prev.filter(m => !selectedMsgIds.includes(m._id)));
-        setSelectedMsgIds([]);
+        clearSelection();
       } else {
         alert('Failed to delete');
       }
@@ -1300,7 +1799,6 @@ export default function ChatListPage() {
 
   return (
     <div className="chat-wrap">
-
       <aside className="chat-side">
         <h3>Messages</h3>
         {threads.map(u => (
@@ -1318,29 +1816,35 @@ export default function ChatListPage() {
         ) : (
           <>
             <header className="chat-head">
-              Chat with {withUser}
-              <div style={{ float: 'right' }}>
-                <button onClick={deleteChat} style={{ marginRight: '10px' }}>🗑️ Delete Chat</button>
-              </div>
+              {selectionMode ? (
+                <div>
+                  <button onClick={deleteSelectedMessages}>🗑️ Delete Selected</button>
+                  <button onClick={clearSelection}>❌ Cancel</button>
+                </div>
+              ) : (
+                <>
+                  Chat with {withUser}
+                  <button onClick={deleteChat} style={{ float: 'right' }}>🗑️ Delete Chat</button>
+                </>
+              )}
             </header>
-
-            {selectedMsgIds.length > 0 && (
-              <div style={{ textAlign: 'right', margin: '8px 0' }}>
-                <button onClick={deleteSelectedMessages} className="danger">
-                  🗑️ Delete {selectedMsgIds.length} Selected
-                </button>
-              </div>
-            )}
 
             <div className="chat-body">
               {msgs.map((m, i) => (
-                <div key={i} className={`bubble ${m.sender === me ? 'me' : 'them'}`}>
-                  <input
-                    type="checkbox"
-                    checked={selectedMsgIds.includes(m._id)}
-                    onChange={() => toggleSelectMsg(m._id)}
-                    style={{ marginRight: '8px', float: 'left' }}
-                  />
+                <div
+                  key={i}
+                  className={`bubble ${m.sender === me ? 'me' : 'them'} ${selectedMsgIds.includes(m._id) ? 'selected' : ''}`}
+                  onDoubleClick={() => handleMsgDoubleClick(m._id)}
+                  onClick={() => selectionMode && toggleSelectMsg(m._id)}
+                >
+                  {selectionMode && selectedMsgIds.includes(m._id) && (
+                    <input
+                      type="checkbox"
+                      checked
+                      readOnly
+                      style={{ float: 'left', marginRight: '8px' }}
+                    />
+                  )}
                   {m.mimeType ? (
                     mimeIsImg(m.mimeType) ? (
                       <img src={m.media || m.url} alt="img" className="bubble-img" />
@@ -1355,14 +1859,6 @@ export default function ChatListPage() {
                     )
                   ) : (
                     m.text
-                  )}
-                  {m.sender === me && (
-                    <span
-                      style={{ color: 'red', float: 'right', cursor: 'pointer' }}
-                      onClick={() => deleteMessage(m._id)}
-                    >
-                      ❌
-                    </span>
                   )}
                   <span className="t">{new Date(m.time).toLocaleTimeString()}</span>
                 </div>
