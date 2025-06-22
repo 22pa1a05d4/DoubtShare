@@ -428,6 +428,8 @@ router.delete('/:id', async (req, res) => {
     res.status(500).send('Failed to delete');
   }
 });
+router.get('/', (req, res) => res.send('Posts route is alive ✅'));
+
 // routes/posts.js
 router.get('/:id', async (req, res) => {
   try {
