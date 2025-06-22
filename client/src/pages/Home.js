@@ -1,21 +1,21 @@
-import React from 'react';
-import './Home.css';
-import Navbar from '../components/Navbar';
-import HeroSection from '../components/HeroSection';
-import WhyChooseUs from '../components/WhyChooseUs';
+// import React from 'react';
+// import './Home.css';
+// import Navbar from '../components/Navbar';
+// import HeroSection from '../components/HeroSection';
+// import WhyChooseUs from '../components/WhyChooseUs';
 
-import Footer from '../components/Footer';
+// import Footer from '../components/Footer';
 
-const Home = () => {
-  return (
-    <div>
-      <Navbar />
-      <HeroSection />
-      <WhyChooseUs />
+// const Home = () => {
+//   return (
+//     <div>
+//       <Navbar />
+//       <HeroSection />
+//       <WhyChooseUs />
       
-      <Footer />
-    </div>
-  );
-};
+//       <Footer />
+//     </div>
+//   );
+// };
 
-export default Home;
+// export default Home;
