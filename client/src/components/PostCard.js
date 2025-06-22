@@ -940,9 +940,26 @@ const PostCard = ({ post, refreshFeed, onDelete }) => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [selectedUsersToSend, setSelectedUsersToSend] = useState([]);
+  const [isFollowing, setIsFollowing] = useState(false);
 
   const currentEmail = localStorage.getItem('userEmail');
   const isMyPost = currentEmail === post.email;
+  useEffect(() => {
+  const checkFollowStatus = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/auth/following/${currentEmail}`);
+      const list = await res.json();
+      setIsFollowing(list.includes(post.email));
+    } catch (err) {
+      console.error('Failed to fetch follow status', err);
+    }
+  };
+
+  if (post.email !== currentEmail) {
+    checkFollowStatus();
+  }
+}, [currentEmail, post.email]);
+
  useEffect(() => {
   const checkIfSaved = async () => {
     try {
@@ -983,6 +1000,28 @@ const PostCard = ({ post, refreshFeed, onDelete }) => {
       console.error('Error posting answer', err);
     }
   };
+const handleFollowToggle = async () => {
+  try {
+    const url = isFollowing
+      ? 'http://localhost:5000/api/auth/unfollow'
+      : 'http://localhost:5000/api/auth/follow';
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        currentUserEmail: currentEmail,
+        targetUserEmail: post.email,
+      }),
+    });
+
+    if (res.ok) {
+      setIsFollowing(prev => !prev);
+    }
+  } catch (err) {
+    console.error('Follow toggle failed', err);
+  }
+};
 
   const handleDelete = async () => {
     if (!window.confirm('Delete this post?')) return;
@@ -1098,33 +1137,6 @@ const toggleSave = async () => {
   };
 
   return (
-    // <div className="post-card">
-    //   {getImgSrc() && (
-    //     <img
-    //       src={getImgSrc()}
-    //       alt="Post"
-    //       className="post-image"
-    //       onError={(e) => (e.target.style.display = 'none')}
-    //     />
-    //   )}
-
-    //   {post.description && <p className="post-description">{post.description}</p>}
-
-    //   <div className="post-actions">
-    //     <button onClick={() => setShowAnswers((v) => !v)}>
-    //       {showAnswers ? 'Hide Answers' : isMyPost ? 'View Answers' : 'View / Answer'}
-    //     </button>
-
-    //     <button onClick={fetchShareUsers}>Share</button>
-
-    //     {isMyPost ? (
-    //       <button className="danger" onClick={handleDelete}>Delete</button>
-    //     ) : (
-    //       <button className='save-btn'
-    //        onClick={toggleSave}>{saved ? 'Unsave' : 'Save'}</button>
-
-    //     )}
-    //   </div>
     <div className="post-card">
   <div className="post-header">
    <div className="profile-initial">
@@ -1135,7 +1147,15 @@ const toggleSave = async () => {
       <strong>{post.author?.name || 'Anonymous'}</strong>
       <p>{post.author?.branch || 'Dept'}</p>
     </div>
-    <button className="follow-btn">Follow</button>
+   {!isMyPost && (
+  <button
+    className={`follow-btn ${isFollowing ? 'following' : ''}`}
+    onClick={handleFollowToggle}
+  >
+    {isFollowing ? 'Following' : 'Follow'}
+  </button>
+)}
+
   </div>
 
   {/* Subject Badge */}
