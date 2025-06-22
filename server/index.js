@@ -10,6 +10,8 @@ const notifRoutes = require('./routes/notifications');
 const messageRoutes = require('./routes/messages');
 const searchRoutes =require('./routes/search');
 const User = require('./models/User')
+const PORT = process.env.PORT || 5000;
+const bcrypt = require('bcryptjs');
 
 const app = express();
 app.use(cors());
