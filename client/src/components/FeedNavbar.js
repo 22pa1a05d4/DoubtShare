@@ -857,30 +857,44 @@ const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
       console.error('Search error:', err);
     }
   };
+const fetchPhoto = async () => {
+  try {
+    const res = await fetch(`http://localhost:5000/api/auth/profile/${userEmail}`);
+    const data = await res.json();
 
-  const fetchPhoto = async () => {
-    try {
-      const res = await fetch(`http://localhost:5000/api/auth/profile/${userEmail}`);
-      const data = await res.json();
-
-      if (data.profilePhoto) {
-        const serverPhoto = data.profilePhoto;
-        const localPhoto = localStorage.getItem(`profile-${userEmail}`);
-
-        if (serverPhoto !== localPhoto) {
-          localStorage.setItem(`profile-${userEmail}`, serverPhoto);
-          setProfilePhoto(serverPhoto);
-        } else {
-          setProfilePhoto(localPhoto || defaultAvatar);
-        }
-      } else {
-        const cached = localStorage.getItem(`profile-${userEmail}`);
-        if (cached) setProfilePhoto(cached);
-      }
-    } catch (err) {
-      console.error('photo error', err);
+    if (data.profilePhoto) {
+      setProfilePhoto(data.profilePhoto); // ✅ DIRECTLY set from server
+    } else {
+      setProfilePhoto(defaultAvatar);
     }
-  };
+  } catch (err) {
+    console.error('photo error', err);
+  }
+};
+
+  // const fetchPhoto = async () => {
+  //   try {
+  //     const res = await fetch(`http://localhost:5000/api/auth/profile/${userEmail}`);
+  //     const data = await res.json();
+
+  //     if (data.profilePhoto) {
+  //       const serverPhoto = data.profilePhoto;
+  //       const localPhoto = localStorage.getItem(`profile-${userEmail}`);
+
+  //       if (serverPhoto !== localPhoto) {
+  //         localStorage.setItem(`profile-${userEmail}`, serverPhoto);
+  //         setProfilePhoto(serverPhoto);
+  //       } else {
+  //         setProfilePhoto(localPhoto || defaultAvatar);
+  //       }
+  //     } else {
+  //       const cached = localStorage.getItem(`profile-${userEmail}`);
+  //       if (cached) setProfilePhoto(cached);
+  //     }
+  //   } catch (err) {
+  //     console.error('photo error', err);
+  //   }
+  // };
  useEffect(() => {
   const handleResize = () => {
     setIsMobile(window.innerWidth <= 768);
@@ -956,35 +970,64 @@ const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     return () => window.removeEventListener('notif-updated', handler);
   }, [userEmail]);
 
+  // const handlePhotoChange = async (e) => {
+  //   const file = e.target.files[0];
+  //   if (!file) return;
+
+  //   const reader = new FileReader();
+  //   reader.onloadend = async () => {
+  //     const base64 = reader.result;
+
+  //     try {
+  //       const res = await fetch('http://localhost:5000/api/auth/profile/photo/update', {
+  //         method: 'POST',
+  //         headers: { 'Content-Type': 'application/json' },
+  //         body: JSON.stringify({ email: userEmail, profilePhoto: base64 }),
+  //       });
+
+  //       if (res.ok) {
+  //         localStorage.removeItem(`profile-${userEmail}`);
+  //         localStorage.setItem(`profile-${userEmail}`, base64);
+  //         setProfilePhoto(base64);
+  //         window.dispatchEvent(new Event('profile-updated'));
+          
+  //       } else {
+  //         console.error('Failed to upload new photo');
+  //       }
+  //     } catch (err) {
+  //       console.error('Upload error:', err);
+  //     }
+  //   };
+  //   reader.readAsDataURL(file);
+  // };
   const handlePhotoChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const file = e.target.files[0];
+  if (!file) return;
 
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      const base64 = reader.result;
+  const reader = new FileReader();
+  reader.onloadend = async () => {
+    const base64 = reader.result;
 
-      try {
-        const res = await fetch('http://localhost:5000/api/auth/profile/photo/update', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: userEmail, profilePhoto: base64 }),
-        });
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/profile/photo/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userEmail, profilePhoto: base64 }),
+      });
 
-        if (res.ok) {
-          localStorage.removeItem(`profile-${userEmail}`);
-          localStorage.setItem(`profile-${userEmail}`, base64);
-          setProfilePhoto(base64);
-          window.dispatchEvent(new Event('profile-updated'));
-        } else {
-          console.error('Failed to upload new photo');
-        }
-      } catch (err) {
-        console.error('Upload error:', err);
+      if (res.ok) {
+        setProfilePhoto(base64); // ✅ Just update state
+        window.dispatchEvent(new Event('profile-updated')); // Notify others
+      } else {
+        console.error('Failed to upload new photo');
       }
-    };
-    reader.readAsDataURL(file);
+    } catch (err) {
+      console.error('Upload error:', err);
+    }
   };
+  reader.readAsDataURL(file);
+};
+
 
   const handleRemovePhoto = async () => {
     try {

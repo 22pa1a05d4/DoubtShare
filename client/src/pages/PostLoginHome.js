@@ -659,40 +659,95 @@ useEffect(() => {
     const data = await res.json();
     setUserPosts(data);
   };
- const handlePhotoChange = async (e) => {
+ 
+// const handlePhotoChange = async (e) => {
+//   const file = e.target.files[0];
+//   if (!file) return;
+
+//   const reader = new FileReader();
+//   reader.onloadend = async () => {
+//     const base64 = reader.result;
+
+//     try {
+//       const res = await fetch('http://localhost:5000/api/auth/profile/photo/update', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ email: localStorage.getItem('userEmail'), profilePhoto: base64 }),
+//       });
+
+//       if (res.ok) {
+//         localStorage.setItem(`profile-${localStorage.getItem('userEmail')}`, base64);
+//         setUserInfo((prev) => ({ ...prev, profilePhoto: base64 }));
+//         window.dispatchEvent(new Event('profile-updated'));
+//         setProfileOpen(false);
+//       } else {
+//         alert('Failed to update photo');
+//       }
+//     } catch (err) {
+//       console.error('Photo upload error:', err);
+//       alert('Upload failed. Try again.');
+//     }
+//   };
+
+//   reader.readAsDataURL(file);
+// };
+const handlePhotoChange = async (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
-  const fd = new FormData();
-  fd.append('profilePhoto', file);
-  fd.append('email', localStorage.getItem('userEmail'));
+  const reader = new FileReader();
+  reader.onloadend = async () => {
+    const base64 = reader.result;
 
-  try {
-    const res = await fetch('http://localhost:5000/api/auth/update-photo', {
-      method: 'PUT',
-      body: fd,
-    });
-    const updated = await res.json();
-    setUserInfo((prev) => ({ ...prev, profilePhoto: updated.profilePhoto }));
-    setProfileOpen(false);
-  } catch (err) {
-    alert('Failed to update photo');
-  }
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/profile/photo/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: localStorage.getItem('userEmail'), profilePhoto: base64 }),
+      });
+
+      if (res.ok) {
+        // ✅ Don't store base64 in localStorage
+        // ✅ Instead: update React state and reload if needed
+        setUserInfo((prev) => ({ ...prev, profilePhoto: base64 }));
+        setProfileOpen(false);
+        window.dispatchEvent(new Event('profile-updated'));
+      } else {
+        alert('Failed to update photo');
+      }
+    } catch (err) {
+      console.error('Photo upload error:', err);
+      alert('Upload failed. Try again.');
+    }
+  };
+
+  reader.readAsDataURL(file);
 };
 
 const handleRemovePhoto = async () => {
   const email = localStorage.getItem('userEmail');
+
   try {
-    const res = await fetch(`http://localhost:5000/api/auth/remove-photo/${email}`, {
-      method: 'PUT',
+    const res = await fetch('http://localhost:5000/api/auth/profile/photo/remove', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
     });
-    await res.json();
-    setUserInfo((prev) => ({ ...prev, profilePhoto: '' }));
-    setProfileOpen(false);
+
+    if (res.ok) {
+      localStorage.removeItem(`profile-${email}`);
+      setUserInfo((prev) => ({ ...prev, profilePhoto: '' }));
+      window.dispatchEvent(new Event('profile-updated'));
+      setProfileOpen(false);
+    } else {
+      alert('Failed to remove photo');
+    }
   } catch (err) {
+    console.error('Photo remove error:', err);
     alert('Failed to remove photo');
   }
 };
+
 
   /* ── feed ── */
   const fetchFeed = async () => {
