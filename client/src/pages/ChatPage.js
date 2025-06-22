@@ -75,7 +75,8 @@ const ChatPage = () => {
 
   useEffect(() => {
     const fetchMessages = async () => {
-      const res = await fetch(`http://localhost:5000/api/messages/${myEmail}/${targetEmail}`);
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/messages/${myEmail}/${targetEmail}`);
       const data = await res.json();
       setMessages(data);
     };
@@ -85,7 +86,8 @@ const ChatPage = () => {
   const sendMessage = async () => {
     if (!text.trim()) return;
     const msg = { sender: myEmail, receiver: targetEmail, text };
-    await fetch('http://localhost:5000/api/messages', {
+    await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/messages`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(msg),

@@ -10,7 +10,8 @@ const SinglePostPage = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/posts/${postId}`);
+        const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/posts/${postId}`);
         const data = await res.json();
         setPost(data);
       } catch (err) {

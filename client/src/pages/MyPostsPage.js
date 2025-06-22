@@ -58,7 +58,8 @@ const MyPostsPage = () => {
   const email = localStorage.getItem('userEmail');
 
   const fetchMine = async () => {
-    const res = await fetch(`http://localhost:5000/api/posts/my-posts/${email}`);
+    const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/posts/my-posts/${email}`);
     const data = await res.json();
     setMyPosts(data);
   };

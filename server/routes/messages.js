@@ -251,7 +251,8 @@ router.post('/share-post', async (req, res) => {
 
     /* build image url (or '') */
     const mediaURL = post.imageUrl
-      ? `http://localhost:5000/uploads/${post.imageUrl.replace(/^\/?uploads\/?/, '')}`
+      ? `${process.env.REACT_APP_API_BASE_URL}
+/uploads/${post.imageUrl.replace(/^\/?uploads\/?/, '')}`
       : '';
 
     /* create one message per receiver */

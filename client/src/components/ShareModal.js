@@ -9,10 +9,10 @@ const ShareModal = ({ meEmail, post, onClose }) => {
   /* load followings + make sure post owner is present */
   useEffect(() => {
     (async () => {
-      const resFollow  = await fetch(`http://localhost:5000/api/auth/following/${meEmail}`);
+      const resFollow  = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/following/${meEmail}`);
       const emails     = await resFollow.json();  // ["a@x","b@y"]
 
-      const resUsers   = await fetch('http://localhost:5000/api/auth/all-users');
+      const resUsers   = await fetch('${process.env.REACT_APP_API_BASE_URL}/api/auth/all-users');
       const allUsers   = await resUsers.json();
 
       let rows = emails
@@ -38,7 +38,7 @@ const ShareModal = ({ meEmail, post, onClose }) => {
 
   const send = async () => {
     if (selected.size === 0) return;
-    await fetch('http://localhost:5000/api/messages/share-post', {
+    await fetch('${process.env.REACT_APP_API_BASE_URL}/api/messages/share-post', {
       method : 'POST',
       headers: { 'Content-Type':'application/json' },
       body   : JSON.stringify({

@@ -8,7 +8,8 @@ const SavedPosts = () => {
   useEffect(() => {
     const fetchSaved = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/posts/saved/${currentEmail}`);
+        const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/posts/saved/${currentEmail}`);
         const data = await res.json();
         setSavedPosts(data);
       } catch (err) {

@@ -256,7 +256,8 @@ const MyNetworkPage = () => {
 
   useEffect(() => {
     const fetchLists = async () => {
-      const res = await fetch(`http://localhost:5000/api/auth/following/${email}`);
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/auth/following/${email}`);
       const f = await res.json();
       const bl = JSON.parse(localStorage.getItem(blockKey)) || [];
       setFollowing(f);
@@ -266,7 +267,8 @@ const MyNetworkPage = () => {
   }, [email]);
 
   const unFollow = async (target) => {
-    await fetch('http://localhost:5000/api/auth/unfollow', {
+    await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/auth/unfollow`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ currentUserEmail: email, targetUserEmail: target }),
@@ -296,7 +298,8 @@ const MyNetworkPage = () => {
 
   const handleShowProfile = async (emailStr) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/auth/profile/${emailStr}`);
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/auth/profile/${emailStr}`);
       const data = await res.json();
       setPopupUser(data);
     } catch (err) {

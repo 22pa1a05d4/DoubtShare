@@ -403,7 +403,8 @@ const SuggestedUsers = ({ currentUserEmail }) => {
   // Fetch who user is following
   useEffect(() => {
     const fetchFollows = async () => {
-      const res = await fetch(`http://localhost:5000/api/auth/following/${currentUserEmail}`);
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/auth/following/${currentUserEmail}`);
       const list = await res.json();
       setFollowing(list);
     };
@@ -413,7 +414,8 @@ const SuggestedUsers = ({ currentUserEmail }) => {
   // Fetch all users (excluding hidden/blocked/followed)
   useEffect(() => {
     const fetchUsers = async () => {
-      const res = await fetch('http://localhost:5000/api/auth/all-users');
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/auth/all-users`);
       const data = await res.json();
 
       const hidden = get('hidden');
@@ -434,7 +436,8 @@ const SuggestedUsers = ({ currentUserEmail }) => {
   // Follow handler
   const handleFollow = async (email) => {
     try {
-      await fetch('http://localhost:5000/api/auth/follow', {
+      await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/auth/follow`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -463,7 +466,8 @@ const SuggestedUsers = ({ currentUserEmail }) => {
   // Show profile popup
   const handleShowProfile = async (email) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/auth/profile/${email}`);
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/auth/profile/${email}`);
       const data = await res.json(); // must contain firstName, lastName, college, branch, profilePhoto
       setPopupUser(data);
     } catch (err) {

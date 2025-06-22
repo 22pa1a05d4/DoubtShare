@@ -16,7 +16,7 @@
 //   useEffect(() => {
 //     const fetchPhoto = async () => {
 //       try {
-//         const res  = await fetch(`http://localhost:5000/api/auth/profile/${userEmail}`);
+//         const res  = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/profile/${userEmail}`);
 //         const data = await res.json();
 //         if (data.profilePhoto) {
 //           setProfilePhoto(data.profilePhoto);
@@ -36,7 +36,7 @@
 //   useEffect(() => {
 //     const fetchNotifs = async () => {
 //       try {
-//         const res  = await fetch(`http://localhost:5000/api/notifications/${userEmail}`);
+//         const res  = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/notifications/${userEmail}`);
 //         const data = await res.json();          // expected: ['A answered…', 'B liked…']
 //         setNotifications(data);
 //       } catch (err) {
@@ -56,7 +56,7 @@
 //       setProfilePhoto(base64);
 //       localStorage.setItem(`profilePhoto-${userEmail}`, base64);
 //       try {
-//         await fetch(`http://localhost:5000/api/profile/photo/update`, {
+//         await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/profile/photo/update`, {
 //           method: 'POST',
 //           headers: { 'Content-Type': 'application/json' },
 //           body: JSON.stringify({ email: userEmail, profilePhoto: base64 }),
@@ -74,7 +74,7 @@
 //     localStorage.removeItem(`profilePhoto-${userEmail}`);
 //     setProfileMenuOpen(false);
 //     try {
-//       await fetch(`http://localhost:5000/api/profile/photo/remove`, {
+//       await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/profile/photo/remove`, {
 //         method: 'POST',
 //         headers: { 'Content-Type': 'application/json' },
 //         body: JSON.stringify({ email: userEmail }),
@@ -188,7 +188,7 @@
 //   useEffect(() => {
 //     const fetchPhoto = async () => {
 //       try {
-//         const res  = await fetch(`http://localhost:5000/api/auth/profile/${userEmail}`);
+//         const res  = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/profile/${userEmail}`);
 //         const data = await res.json();
 //         if (data.profilePhoto) {
 //           setProfilePhoto(data.profilePhoto);
@@ -208,7 +208,7 @@
 //   useEffect(() => {
 //     const fetchNotifs = async () => {
 //       try {
-//         const res  = await fetch(`http://localhost:5000/api/notifications/${userEmail}`);
+//         const res  = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/notifications/${userEmail}`);
 //         const data = await res.json(); // [{ message, postId, read, createdAt }]
 //         setNotifications(data);
 //       } catch (err) {
@@ -228,7 +228,7 @@
 //       setProfilePhoto(base64);
 //       localStorage.setItem(`profilePhoto-${userEmail}`, base64);
 //       try {
-//         await fetch(`http://localhost:5000/api/profile/photo/update`, {
+//         await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/profile/photo/update`, {
 //           method: 'POST',
 //           headers: { 'Content-Type': 'application/json' },
 //           body: JSON.stringify({ email: userEmail, profilePhoto: base64 }),
@@ -246,7 +246,7 @@
 //     localStorage.removeItem(`profilePhoto-${userEmail}`);
 //     setProfileMenuOpen(false);
 //     try {
-//       await fetch(`http://localhost:5000/api/profile/photo/remove`, {
+//       await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/profile/photo/remove`, {
 //         method: 'POST',
 //         headers: { 'Content-Type': 'application/json' },
 //         body: JSON.stringify({ email: userEmail }),
@@ -339,7 +339,7 @@
 //   useEffect(() => {
 //     const fetchPhoto = async () => {
 //       try {
-//         const res  = await fetch(`http://localhost:5000/api/auth/profile/${userEmail}`);
+//         const res  = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/profile/${userEmail}`);
 //         const data = await res.json();
 //         if (data.profilePhoto) {
 //           setProfilePhoto(data.profilePhoto);
@@ -357,7 +357,7 @@
 //   useEffect(() => {
 //     const fetchNotifs = async () => {
 //       try {
-//         const res  = await fetch(`http://localhost:5000/api/notifications/${userEmail}`);
+//         const res  = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/notifications/${userEmail}`);
 //         const data = await res.json();           // [{message,postId,read,…}]
 //         setNotifs(data);
 //       } catch (err) { console.error('notif error', err); }
@@ -438,7 +438,7 @@
 //   /* ───────────── Fetch Profile Photo ───────────── */
 //   const fetchPhoto = async () => {
 //     try {
-//       const res = await fetch(`http://localhost:5000/api/auth/profile/${userEmail}`);
+//       const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/profile/${userEmail}`);
 //       const data = await res.json();
 
 //       if (data.profilePhoto) {
@@ -473,7 +473,7 @@
 //   useEffect(() => {
 //     const fetchNotifs = async () => {
 //       try {
-//         const res = await fetch(`http://localhost:5000/api/notifications/${userEmail}`);
+//         const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/notifications/${userEmail}`);
 //         const data = await res.json();
 //         setNotifs(data);
 //       } catch (err) {
@@ -498,7 +498,7 @@
 //       const base64 = reader.result;
 
 //       try {
-//         const res = await fetch('http://localhost:5000/api/auth/profile/photo/update', {
+//         const res = await fetch('${process.env.REACT_APP_API_BASE_URL}/api/auth/profile/photo/update', {
 //           method: 'POST',
 //           headers: { 'Content-Type': 'application/json' },
 //           body: JSON.stringify({ email: userEmail, profilePhoto: base64 }),
@@ -524,7 +524,7 @@
 //   /* ───────────── Remove Photo ───────────── */
 //   const handleRemovePhoto = async () => {
 //     try {
-//       const res = await fetch('http://localhost:5000/api/auth/profile/photo/remove', {
+//       const res = await fetch('${process.env.REACT_APP_API_BASE_URL}/api/auth/profile/photo/remove', {
 //         method: 'POST',
 //         headers: { 'Content-Type': 'application/json' },
 //         body: JSON.stringify({ email: userEmail }),
@@ -606,7 +606,7 @@
 //    const [popupUser, setPopupUser] = useState(null);
 // const handleShowProfile = async (email) => {
 //   try {
-//     const res = await fetch(`http://localhost:5000/api/auth/profile/${email}`);
+//     const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/profile/${email}`);
 //     const data = await res.json();
 //     setPopupUser(data);
 //   } catch (err) {
@@ -623,7 +623,7 @@
 //     }
 
 //     try {
-//       const res = await fetch(`http://localhost:5000/api/search/${query}`);
+//       const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/search/${query}`);
 //       const data = await res.json();
 //       setSearchResults(data);
 //       setShowDropdown(true);
@@ -634,7 +634,7 @@
 
 //   const fetchPhoto = async () => {
 //     try {
-//       const res = await fetch(`http://localhost:5000/api/auth/profile/${userEmail}`);
+//       const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/profile/${userEmail}`);
 //       const data = await res.json();
 
 //       if (data.profilePhoto) {
@@ -666,7 +666,7 @@
 //   useEffect(() => {
 //     const fetchNotifs = async () => {
 //       try {
-//         const res = await fetch(`http://localhost:5000/api/notifications/${userEmail}`);
+//         const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/notifications/${userEmail}`);
 //         const data = await res.json();
 //         setNotifs(data);
 //       } catch (err) {
@@ -689,7 +689,7 @@
 //       const base64 = reader.result;
 
 //       try {
-//         const res = await fetch('http://localhost:5000/api/auth/profile/photo/update', {
+//         const res = await fetch('${process.env.REACT_APP_API_BASE_URL}/api/auth/profile/photo/update', {
 //           method: 'POST',
 //           headers: { 'Content-Type': 'application/json' },
 //           body: JSON.stringify({ email: userEmail, profilePhoto: base64 }),
@@ -712,7 +712,7 @@
 
 //   const handleRemovePhoto = async () => {
 //     try {
-//       const res = await fetch('http://localhost:5000/api/auth/profile/photo/remove', {
+//       const res = await fetch('${process.env.REACT_APP_API_BASE_URL}/api/auth/profile/photo/remove', {
 //         method: 'POST',
 //         headers: { 'Content-Type': 'application/json' },
 //         body: JSON.stringify({ email: userEmail }),
@@ -849,7 +849,7 @@ const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     }
 
     try {
-      const res = await fetch(`http://localhost:5000/api/search/${query}`);
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/search/${query}`);
       const data = await res.json();
       setSearchResults(data);
       setShowDropdown(true);
@@ -859,7 +859,7 @@ const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   };
 const fetchPhoto = async () => {
   try {
-    const res = await fetch(`http://localhost:5000/api/auth/profile/${userEmail}`);
+    const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/profile/${userEmail}`);
     const data = await res.json();
 
     if (data.profilePhoto) {
@@ -874,7 +874,7 @@ const fetchPhoto = async () => {
 
   // const fetchPhoto = async () => {
   //   try {
-  //     const res = await fetch(`http://localhost:5000/api/auth/profile/${userEmail}`);
+  //     const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/profile/${userEmail}`);
   //     const data = await res.json();
 
   //     if (data.profilePhoto) {
@@ -906,7 +906,7 @@ const fetchPhoto = async () => {
 
   const fetchFollowing = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/auth/following/${userEmail}`);
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/following/${userEmail}`);
       const data = await res.json();
       setFollowing(data);
     } catch (err) {
@@ -916,7 +916,7 @@ const fetchPhoto = async () => {
 
   const handleFollow = async (targetEmail) => {
     try {
-      const res = await fetch('http://localhost:5000/api/auth/follow', {
+      const res = await fetch('${process.env.REACT_APP_API_BASE_URL}/api/auth/follow', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -934,7 +934,7 @@ const fetchPhoto = async () => {
 
   const handleShowProfile = async (email) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/auth/profile/${email}`);
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/profile/${email}`);
       const data = await res.json();
       setPopupUser(data);
     } catch (err) {
@@ -956,7 +956,7 @@ const fetchPhoto = async () => {
   useEffect(() => {
     const fetchNotifs = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/notifications/${userEmail}`);
+        const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/notifications/${userEmail}`);
         const data = await res.json();
         setNotifs(data);
       } catch (err) {
@@ -979,7 +979,7 @@ const fetchPhoto = async () => {
   //     const base64 = reader.result;
 
   //     try {
-  //       const res = await fetch('http://localhost:5000/api/auth/profile/photo/update', {
+  //       const res = await fetch('${process.env.REACT_APP_API_BASE_URL}/api/auth/profile/photo/update', {
   //         method: 'POST',
   //         headers: { 'Content-Type': 'application/json' },
   //         body: JSON.stringify({ email: userEmail, profilePhoto: base64 }),
@@ -1009,7 +1009,7 @@ const fetchPhoto = async () => {
     const base64 = reader.result;
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/profile/photo/update', {
+      const res = await fetch('${process.env.REACT_APP_API_BASE_URL}/api/auth/profile/photo/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: userEmail, profilePhoto: base64 }),
@@ -1031,7 +1031,7 @@ const fetchPhoto = async () => {
 
   const handleRemovePhoto = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/auth/profile/photo/remove', {
+      const res = await fetch('${process.env.REACT_APP_API_BASE_URL}/api/auth/profile/photo/remove', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: userEmail }),

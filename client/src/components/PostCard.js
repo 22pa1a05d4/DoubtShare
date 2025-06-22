@@ -26,7 +26,7 @@
 //     const path = post.imageUrl.startsWith('/uploads')
 //       ? post.imageUrl
 //       : `/uploads/${post.imageUrl.replace(/^\/?/, '')}`;
-//     return `http://localhost:5000${path}`;
+//     return `${process.env.REACT_APP_API_BASE_URL}${path}`;
 //   };
 
 //   const handleShare = () => {
@@ -39,7 +39,7 @@
 //   const submitComment = async () => {
 //     if (!reply.trim()) return;
 //     try {
-//       await fetch(`http://localhost:5000/api/posts/${post._id}/comment`, {
+//       await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/${post._id}/comment`, {
 //         method : 'POST',
 //         headers: { 'Content-Type': 'application/json' },
 //         body   : JSON.stringify({
@@ -149,7 +149,7 @@
 //     const path = post.imageUrl.startsWith('/uploads')
 //       ? post.imageUrl
 //       : `/uploads/${post.imageUrl.replace(/^\/?/, '')}`;
-//     return `http://localhost:5000${path}`;
+//     return `${process.env.REACT_APP_API_BASE_URL}${path}`;
 //   };
 
 //   /* ── submit answer (only if not my post) ─ */
@@ -157,7 +157,7 @@
 //     if (!newAnswer.trim()) return;
 //     try {
 //       const res = await fetch(
-//         `http://localhost:5000/api/posts/${post._id}/comment`,
+//         `${process.env.REACT_APP_API_BASE_URL}/api/posts/${post._id}/comment`,
 //         {
 //           method: 'POST',
 //           headers: { 'Content-Type': 'application/json' },
@@ -180,7 +180,7 @@
 //   const handleDelete = async () => {
 //     if (!window.confirm('Delete this post?')) return;
 //     try {
-//       await fetch(`http://localhost:5000/api/posts/${post._id}`, {
+//       await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/${post._id}`, {
 //         method: 'DELETE',
 //         headers: { 'Content-Type': 'application/json' },
 //         body: JSON.stringify({ email: currentEmail }),
@@ -297,14 +297,14 @@
 //     const path = post.imageUrl.startsWith('/uploads')
 //       ? post.imageUrl
 //       : `/uploads/${post.imageUrl.replace(/^\/?/, '')}`;
-//     return `http://localhost:5000${path}`;
+//     return `${process.env.REACT_APP_API_BASE_URL}${path}`;
 //   };
 
 //   const submitAnswer = async () => {
 //     if (!newAnswer.trim()) return;
 //     try {
 //       const res = await fetch(
-//         `http://localhost:5000/api/posts/${post._id}/comment`,
+//         `${process.env.REACT_APP_API_BASE_URL}/api/posts/${post._id}/comment`,
 //         {
 //           method: 'POST',
 //           headers: { 'Content-Type': 'application/json' },
@@ -326,7 +326,7 @@
 //   const handleDelete = async () => {
 //     if (!window.confirm('Delete this post?')) return;
 //     try {
-//       const res = await fetch(`http://localhost:5000/api/posts/${post._id}`, {
+//       const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/${post._id}`, {
 //         method: 'DELETE',
 //         headers: { 'Content-Type': 'application/json' },
 //         body: JSON.stringify({ email: currentEmail }),
@@ -443,14 +443,14 @@
 //     const path = post.imageUrl.startsWith('/uploads')
 //       ? post.imageUrl
 //       : `/uploads/${post.imageUrl.replace(/^\/?/, '')}`;
-//     return `http://localhost:5000${path}`;
+//     return `${process.env.REACT_APP_API_BASE_URL}${path}`;
 //   };
 
 //   const submitAnswer = async () => {
 //     if (!newAnswer.trim()) return;
 //     try {
 //       const res = await fetch(
-//         `http://localhost:5000/api/posts/${post._id}/comment`,
+//         `${process.env.REACT_APP_API_BASE_URL}/api/posts/${post._id}/comment`,
 //         {
 //           method: 'POST',
 //           headers: { 'Content-Type': 'application/json' },
@@ -472,7 +472,7 @@
 //   const handleDelete = async () => {
 //     if (!window.confirm('Delete this post?')) return;
 //     try {
-//       const res = await fetch(`http://localhost:5000/api/posts/${post._id}`, {
+//       const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/${post._id}`, {
 //         method: 'DELETE',
 //         headers: { 'Content-Type': 'application/json' },
 //         body: JSON.stringify({ email: currentEmail }),
@@ -492,7 +492,7 @@
 
 //   const fetchFollowing = async () => {
 //     try {
-//       const res = await fetch(`http://localhost:5000/api/auth/following/${currentEmail}`);
+//       const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/following/${currentEmail}`);
 //       const data = await res.json();
 //       const isCreatorInList = data.some(u => u.email === post.email);
 //       if (!isCreatorInList && post.email !== currentEmail) {
@@ -506,7 +506,7 @@
 //   };
 // const toggleSave = async () => {
 //   try {
-//     const res = await fetch(`http://localhost:5000/api/posts/save/${currentEmail}`, {
+//     const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/save/${currentEmail}`, {
 //       method: 'POST',
 //       headers: { 'Content-Type': 'application/json' },
 //       body: JSON.stringify({ postId: post._id }),
@@ -533,7 +533,7 @@
 //   try {
 //     await Promise.all(
 //       selectedUsersToSend.map(receiver =>
-//         fetch('http://localhost:5000/api/messages/send', {
+//         fetch('${process.env.REACT_APP_API_BASE_URL}/api/messages/send', {
 //           method: 'POST',
 //           headers: { 'Content-Type': 'application/json' },
 //           body: JSON.stringify({ ...payload, receiver }),
@@ -674,14 +674,14 @@
 //     const path = post.imageUrl.startsWith('/uploads')
 //       ? post.imageUrl
 //       : `/uploads/${post.imageUrl.replace(/^\/?/, '')}`;
-//     return `http://localhost:5000${path}`;
+//     return `${process.env.REACT_APP_API_BASE_URL}${path}`;
 //   };
 
 //   const submitAnswer = async () => {
 //     if (!newAnswer.trim()) return;
 //     try {
 //       const res = await fetch(
-//         `http://localhost:5000/api/posts/${post._id}/comment`,
+//         `${process.env.REACT_APP_API_BASE_URL}/api/posts/${post._id}/comment`,
 //         {
 //           method: 'POST',
 //           headers: { 'Content-Type': 'application/json' },
@@ -703,7 +703,7 @@
 //   const handleDelete = async () => {
 //     if (!window.confirm('Delete this post?')) return;
 //     try {
-//       const res = await fetch(`http://localhost:5000/api/posts/${post._id}`, {
+//       const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/${post._id}`, {
 //         method: 'DELETE',
 //         headers: { 'Content-Type': 'application/json' },
 //         body: JSON.stringify({ email: currentEmail }),
@@ -724,11 +724,11 @@
 //   const fetchFollowing = async () => {
 //     try {
 //       // 1) Get raw following email list
-//       const resFollow = await fetch(`http://localhost:5000/api/auth/following/${currentEmail}`);
+//       const resFollow = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/following/${currentEmail}`);
 //       const followEmails = await resFollow.json(); // ["a@x.com", ...]
 
 //       // 2) Fetch full user list
-//       const resUsers = await fetch('http://localhost:5000/api/auth/all-users');
+//       const resUsers = await fetch('${process.env.REACT_APP_API_BASE_URL}/api/auth/all-users');
 //       const allUsers = await resUsers.json(); // [{email, name}, ...]
 
 //       // 3) Map to full user objects
@@ -753,7 +753,7 @@
 
 //   const toggleSave = async () => {
 //     try {
-//       const res = await fetch(`http://localhost:5000/api/posts/save/${currentEmail}`, {
+//       const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/save/${currentEmail}`, {
 //         method: 'POST',
 //         headers: { 'Content-Type': 'application/json' },
 //         body: JSON.stringify({ postId: post._id }),
@@ -779,7 +779,7 @@
 //     try {
 //       await Promise.all(
 //         selectedUsersToSend.map(receiver =>
-//           fetch('http://localhost:5000/api/messages/send', {
+//           fetch('${process.env.REACT_APP_API_BASE_URL}/api/messages/send', {
 //             method: 'POST',
 //             headers: { 'Content-Type': 'application/json' },
 //             body: JSON.stringify({ ...payload, receiver }),
@@ -947,7 +947,7 @@ const PostCard = ({ post, refreshFeed, onDelete }) => {
   useEffect(() => {
   const checkFollowStatus = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/auth/following/${currentEmail}`);
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/following/${currentEmail}`);
       const list = await res.json();
       setIsFollowing(list.includes(post.email));
     } catch (err) {
@@ -963,7 +963,7 @@ const PostCard = ({ post, refreshFeed, onDelete }) => {
  useEffect(() => {
   const checkIfSaved = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/posts/isSaved/${currentEmail}/${post._id}`);
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/isSaved/${currentEmail}/${post._id}`);
       const data = await res.json();
       setSaved(data.saved);
     } catch (err) {
@@ -978,13 +978,13 @@ const PostCard = ({ post, refreshFeed, onDelete }) => {
     const path = post.imageUrl.startsWith('/uploads')
       ? post.imageUrl
       : `/uploads/${post.imageUrl.replace(/^\/?/, '')}`;
-    return `http://localhost:5000${path}`;
+    return `${process.env.REACT_APP_API_BASE_URL}${path}`;
   };
 
   const submitAnswer = async () => {
     if (!newAnswer.trim()) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/posts/${post._id}/comment`, {
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/${post._id}/comment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1003,8 +1003,8 @@ const PostCard = ({ post, refreshFeed, onDelete }) => {
 const handleFollowToggle = async () => {
   try {
     const url = isFollowing
-      ? 'http://localhost:5000/api/auth/unfollow'
-      : 'http://localhost:5000/api/auth/follow';
+      ? '${process.env.REACT_APP_API_BASE_URL}/api/auth/unfollow'
+      : '${process.env.REACT_APP_API_BASE_URL}/api/auth/follow';
 
     const res = await fetch(url, {
       method: 'POST',
@@ -1026,7 +1026,7 @@ const handleFollowToggle = async () => {
   const handleDelete = async () => {
     if (!window.confirm('Delete this post?')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/posts/${post._id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/${post._id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: currentEmail }),
@@ -1046,10 +1046,10 @@ const handleFollowToggle = async () => {
 
   const fetchShareUsers = async () => {
     try {
-      const resFollow = await fetch(`http://localhost:5000/api/auth/following/${currentEmail}`);
+      const resFollow = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/following/${currentEmail}`);
       const followEmails = await resFollow.json();
 
-      const resUsers = await fetch('http://localhost:5000/api/auth/all-users');
+      const resUsers = await fetch('${process.env.REACT_APP_API_BASE_URL}/api/auth/all-users');
       const allUsers = await resUsers.json();
 
       const followList = followEmails
@@ -1089,8 +1089,8 @@ const handleFollowToggle = async () => {
 
 const toggleSave = async () => {
   const url = saved
-    ? `http://localhost:5000/api/posts/unsave/${currentEmail}`
-    : `http://localhost:5000/api/posts/save/${currentEmail}`;
+    ? `${process.env.REACT_APP_API_BASE_URL}/api/posts/unsave/${currentEmail}`
+    : `${process.env.REACT_APP_API_BASE_URL}/api/posts/save/${currentEmail}`;
 
   try {
     const res = await fetch(url, {
@@ -1120,7 +1120,7 @@ const toggleSave = async () => {
     try {
       await Promise.all(
         selectedUsersToSend.map(receiver =>
-          fetch('http://localhost:5000/api/messages/send', {
+          fetch('${process.env.REACT_APP_API_BASE_URL}/api/messages/send', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ...payload, receiver }),

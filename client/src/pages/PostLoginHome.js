@@ -635,7 +635,8 @@ useEffect(() => {
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/auth/profile/${email}`);
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/auth/profile/${email}`);
       const data = await response.json();
 
       console.log("Fetched profile data:", data); // Optional: for debugging
@@ -655,7 +656,8 @@ useEffect(() => {
   const fetchMyPosts = async () => {
     const email = localStorage.getItem('userEmail');
     if (!email) return;
-    const res  = await fetch(`http://localhost:5000/api/posts/my-posts/${email}`);
+    const res  = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/posts/my-posts/${email}`);
     const data = await res.json();
     setUserPosts(data);
   };
@@ -700,7 +702,8 @@ const handlePhotoChange = async (e) => {
     const base64 = reader.result;
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/profile/photo/update', {
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/auth/profile/photo/update`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: localStorage.getItem('userEmail'), profilePhoto: base64 }),
@@ -728,7 +731,8 @@ const handleRemovePhoto = async () => {
   const email = localStorage.getItem('userEmail');
 
   try {
-    const res = await fetch('http://localhost:5000/api/auth/profile/photo/remove', {
+    const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/auth/profile/photo/remove`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
@@ -753,7 +757,8 @@ const handleRemovePhoto = async () => {
   const fetchFeed = async () => {
     const email = localStorage.getItem('userEmail');
     if (!email) return;
-    const res  = await fetch(`http://localhost:5000/api/posts/feed/${email}`);
+    const res  = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/posts/feed/${email}`);
     const data = await res.json();
     setFeedPosts(data);
   };
@@ -770,7 +775,8 @@ const handleRemovePhoto = async () => {
     if (newPost.title) fd.append('title', newPost.title);
   if (newPost.tags) fd.append('tags', newPost.tags); 
   try{
-    await fetch('http://localhost:5000/api/posts/create', { method:'POST', body:fd });
+    await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/posts/create`, { method:'POST', body:fd });
     setShowModal(false);
     setNewPost({ description:'',title: '', tags: '', image:null });
   }catch(error){

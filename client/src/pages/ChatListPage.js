@@ -1691,7 +1691,8 @@ export default function ChatListPage() {
   const loadThread = async (partnerEmail) => {
     setWithUser(partnerEmail);
     clearSelection();
-    const res = await fetch(`http://localhost:5000/api/messages/${me}/${partnerEmail}`);
+    const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/messages/${me}/${partnerEmail}`);
     const data = await res.json();
     setMsgs(data);
   };
@@ -1699,7 +1700,8 @@ export default function ChatListPage() {
   const deleteChat = async () => {
     if (!window.confirm(`Delete all messages with ${withUser}?`)) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/messages/thread/${me}/${withUser}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/messages/thread/${me}/${withUser}`, {
         method: 'DELETE'
       });
       if (res.ok) {
@@ -1719,7 +1721,8 @@ export default function ChatListPage() {
     if (!window.confirm(`Delete ${selectedMsgIds.length} selected messages?`)) return;
 
     try {
-      const res = await fetch('http://localhost:5000/api/messages/delete-multiple', {
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/messages/delete-multiple`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ids: selectedMsgIds }),
@@ -1740,10 +1743,12 @@ export default function ChatListPage() {
     if (!me) { nav('/login'); return; }
 
     const bootstrap = async () => {
-      const resPartners = await fetch(`http://localhost:5000/api/messages/chats/${me}`);
+      const resPartners = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/messages/chats/${me}`);
       const partnerEmails = await resPartners.json();
 
-      const resUsers = await fetch('http://localhost:5000/api/auth/all-users');
+      const resUsers = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/auth/all-users`);
       const allUsers = await resUsers.json();
       let list = partnerEmails
         .map(e => allUsers.find(u => u.email.toLowerCase() === e))
@@ -1770,7 +1775,8 @@ export default function ChatListPage() {
   const sendText = async () => {
     if (!text.trim() || !withUser) return;
     const payload = { sender: me, receiver: withUser, text };
-    const res = await fetch('http://localhost:5000/api/messages/send', {
+    const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/messages/send`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -1787,7 +1793,8 @@ export default function ChatListPage() {
     fd.append('file', file);
     fd.append('sender', me);
     fd.append('receiver', withUser);
-    const res = await fetch('http://localhost:5000/api/messages/file', {
+    const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/messages/file`, {
       method: 'POST',
       body: fd
     });

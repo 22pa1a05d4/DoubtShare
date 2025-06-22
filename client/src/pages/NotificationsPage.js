@@ -152,7 +152,8 @@ const NotificationsPage = () => {
   /* load notifications */
   useEffect(() => {
     const fetchNotifs = async () => {
-      const res  = await fetch(`http://localhost:5000/api/notifications/${email}`);
+      const res  = await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/notifications/${email}`);
       const data = await res.json();
       setNotifications(data);
     };
@@ -163,7 +164,8 @@ const NotificationsPage = () => {
   const openPost = async (notif) => {
     if (!notif.postId) return;
 
-    await fetch('http://localhost:5000/api/notifications/mark-read-one', {
+    await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/notifications/mark-read-one`, {
       method : 'POST',
       headers: { 'Content-Type':'application/json' },
       body   : JSON.stringify({ email, postId: notif.postId }),
