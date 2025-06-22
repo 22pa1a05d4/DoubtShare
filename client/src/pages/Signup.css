@@ -134,4 +134,27 @@
     background-color: #22c55e;
     color: white;
   }
-  
+  @media screen and (max-width: 768px) {
+  .signup-container {
+    flex-direction: column;
+  }
+
+  .signup-form {
+    width: 100%;
+    padding: 20px;
+    background-color: #ffffff; /* Light clean bg for mobile */
+  }
+
+  .signup-steps {
+    display: none; /* ✅ Hide right side on mobile */
+  }
+
+  .form-box {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  input, button {
+    font-size: 16px;
+  }
+}
