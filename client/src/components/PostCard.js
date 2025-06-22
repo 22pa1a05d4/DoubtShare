@@ -943,7 +943,7 @@ const PostCard = ({ post, refreshFeed, onDelete }) => {
 
   const currentEmail = localStorage.getItem('userEmail');
   const isMyPost = currentEmail === post.email;
-useEffect(() => {
+ useEffect(() => {
   const checkIfSaved = async () => {
     try {
       const res = await fetch(`http://localhost:5000/api/posts/isSaved/${currentEmail}/${post._id}`);
@@ -1153,12 +1153,6 @@ const toggleSave = async () => {
     <p className="post-description">{post.description}</p>
   )}
 
-  {/* Tags */}
-  <div className="tag-list">
-    {post.tags?.map((tag, i) => (
-      <span key={i} className="tag">#{tag}</span>
-    ))}
-  </div>
 
   {/* Image (optional) */}
   {getImgSrc() && (
@@ -1168,6 +1162,11 @@ const toggleSave = async () => {
       className="post-image"
     />
   )}
+  <div className="tag-list">
+    {post.tags?.map((tag, i) => (
+      <span key={i} className="tag">#{tag}</span>
+    ))}
+  </div>
 
   {/* Footer */}
   <div className="post-footer">

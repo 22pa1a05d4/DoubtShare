@@ -5,10 +5,12 @@ const postSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  title: String,
   imageUrl: {
     type: String, // store image filename or full URL
     default: ''
   },
+   tags: [String],
   email: {
     type: String,
     required: true

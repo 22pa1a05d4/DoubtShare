@@ -1082,6 +1082,7 @@ const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
       </div>
       {isMobile ? (
   <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>☰</div>
+  
 ) : (
   <div className="right-section">
     <Link to="/network" className="nav-icon">My Network</Link>
@@ -1100,7 +1101,9 @@ const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
       />
       {profileOpen && (
         <div className="profile-menu">
-          <label htmlFor="newPic" className="menu-item">Change Photo</label>
+          
+          <label htmlFor="newPic" className="menu-item" style={{ cursor: 'pointer' }}>📸 Change Photo</label>
+
           <input id="newPic" type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePhotoChange} />
           <button className="remove-btn" onClick={handleRemovePhoto}>Remove Photo</button>
         </div>
@@ -1140,6 +1143,7 @@ const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
         </div>
       </div> */}
        {menuOpen && isMobile && (
+        
       <div className="mobile-menu">
         <Link to="/network">My Network</Link>
         <Link to="/chat-list">Messaging</Link>
@@ -1148,8 +1152,11 @@ const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
         </Link>
         <Link to="/my-posts">My Posts</Link>
         <Link to="/">Logout</Link>
+       
+    
       </div>
     )}
+   
 
       {/* ✅ Show profile popup when clicked */}
       {popupUser && (

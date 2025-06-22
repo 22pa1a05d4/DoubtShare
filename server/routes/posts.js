@@ -120,9 +120,6 @@ const User = require('../models/User'); // ✅ Add this
 /* Helper: turn filename → public URL fragment */
 const makeUrl = (fn) => (fn ? `/uploads/${fn}` : null);
 
-/* ───────────────────────────────
-   CREATE POST  (text + optional img)
-──────────────────────────────── */
 router.post('/save/:email', async (req, res) => {
   const { email } = req.params;
   const { postId } = req.body;
@@ -156,23 +153,44 @@ router.get('/saved/:email', async (req, res) => {
   try {
     const user = await User.findOne({ email }).populate('savedPosts');
     if (!user) return res.status(404).json({ message: 'User not found' });
+    const posts = user.savedPosts;
 
-    res.json(user.savedPosts);
+    // 🔥 Fetch author data
+    const uniqueEmails = [...new Set(posts.map(p => p.email))];
+    const authors = await User.find({ email: { $in: uniqueEmails } }).lean();
+    const byEmail = {};
+    authors.forEach(u => {
+      byEmail[u.email] = u;
+    });
+
+    const enriched = posts.map(p => ({
+      ...p.toObject(),
+      author: {
+        name: (user.name || 'User').split(' ')[0],
+        branch: byEmail[p.email]?.branch || ''
+      },
+      tags: p.tags || [],
+      subject: p.subject || ''
+    }));
+    res.json(enriched);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Failed to fetch saved posts' });
   }
 });
 
-module.exports = router;
+
 router.post('/create', upload.single('image'), async (req, res) => {
   try {
-    const { description, email } = req.body;
+     console.log('Received:', req.body);
+    const { title,description, email,tags } = req.body;
     const filename = req.file ? req.file.filename : null;
 
     const post = new Post({
+      title,
       description,
       email,
+       tags: tags?.split(',').map(t => t.trim()) || [],
       imageUrl: makeUrl(filename),
       comments: [],
     });
@@ -222,21 +240,44 @@ router.post('/unsave/:email', async (req, res) => {
   }
 });
 
+// router.get('/my-posts/:email', async (req, res) => {
+//   try {
+//     const posts = await Post.find({ email: req.params.email })
+//                             .sort({ createdAt: -1 })
+//                             .lean();
+//     res.json(posts);
+//   } catch (err) {
+//     console.error('Error fetching my posts:', err);
+//     res.status(500).send('Error fetching your posts');
+//   }
+// });
+
 router.get('/my-posts/:email', async (req, res) => {
   try {
     const posts = await Post.find({ email: req.params.email })
                             .sort({ createdAt: -1 })
                             .lean();
-    res.json(posts);
+
+    const User = require('../models/User');
+    const user = await User.findOne({ email: req.params.email }).lean();
+
+    const enriched = posts.map(p => ({
+      ...p,
+      author: {
+        name: (user.name || 'User').split(' ')[0],
+        branch: user?.branch || ''
+      },
+      tags: p.tags || [],
+      subject: p.subject || ''
+    }));
+
+    res.json(enriched);
   } catch (err) {
     console.error('Error fetching my posts:', err);
     res.status(500).send('Error fetching your posts');
   }
 });
 
-/* ───────────────────────────────
-   FEED (others’ posts)
-──────────────────────────────── */
 // router.get('/feed/:email', async (req, res) => {
 //   const { email } = req.params;
 //   try {
