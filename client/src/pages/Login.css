@@ -141,6 +141,7 @@
 @media (max-width: 768px) {
   .login-container {
     flex-direction: column;
+    background-color: #b074ff;
   }
 
   .login-left {
