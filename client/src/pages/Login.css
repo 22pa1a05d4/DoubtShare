@@ -49,17 +49,7 @@
     cursor: pointer;
     color: #aaa;
   }
-  
-  .forgot-password {
-    text-align: right;
-    margin-bottom: 1rem;
-    font-size: 0.85rem;
-  }
-  
-  .forgot-password a {
-    color: #ccc;
-    text-decoration: none;
-  }
+ 
   
   .login-button {
     width: 100%;
@@ -151,5 +141,6 @@
 
   .login-right {
     display: none;
+     background: linear-gradient(135deg, #8f44fd, #b074ff);
   }
 }

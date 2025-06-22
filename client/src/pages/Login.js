@@ -67,9 +67,6 @@ if (res.ok) {
                 {showPassword ? '👁️' : '🙈'}
               </span>
             </div>
-            <div className="forgot-password">
-              <a href="/forgot-password">Forgot Password?</a>
-            </div>
             <button type="submit" className="login-button">Login</button>
             <div className="signup-text">
               Don’t have an account? <a href="/signup">Sign up</a>
