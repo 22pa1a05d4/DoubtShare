@@ -1003,8 +1003,8 @@ const PostCard = ({ post, refreshFeed, onDelete }) => {
 const handleFollowToggle = async () => {
   try {
     const url = isFollowing
-      ? '${process.env.REACT_APP_API_BASE_URL}/api/auth/unfollow'
-      : '${process.env.REACT_APP_API_BASE_URL}/api/auth/follow';
+      ? `${process.env.REACT_APP_API_BASE_URL}/api/auth/unfollow`
+      : `${process.env.REACT_APP_API_BASE_URL}/api/auth/follow`;
 
     const res = await fetch(url, {
       method: 'POST',
@@ -1049,7 +1049,7 @@ const handleFollowToggle = async () => {
       const resFollow = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/following/${currentEmail}`);
       const followEmails = await resFollow.json();
 
-      const resUsers = await fetch('${process.env.REACT_APP_API_BASE_URL}/api/auth/all-users');
+      const resUsers = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/all-users`);
       const allUsers = await resUsers.json();
 
       const followList = followEmails
@@ -1120,7 +1120,7 @@ const toggleSave = async () => {
     try {
       await Promise.all(
         selectedUsersToSend.map(receiver =>
-          fetch('${process.env.REACT_APP_API_BASE_URL}/api/messages/send', {
+          fetch(`${process.env.REACT_APP_API_BASE_URL}/api/messages/send`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ...payload, receiver }),
