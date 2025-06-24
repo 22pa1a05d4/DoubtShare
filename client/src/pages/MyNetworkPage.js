@@ -324,6 +324,7 @@ const MyNetworkPage = () => {
         <button onClick={(e) => { e.stopPropagation(); unBlock(emailStr); }} className="pill danger">Un‑block</button>
       ) : (
         <>
+        <div className='button-group'>
           <button className="pill" onClick={(e) => e.stopPropagation()}>Following</button>
           <Link
             to={`/chat-list?selected=${emailStr}`}
@@ -332,6 +333,7 @@ const MyNetworkPage = () => {
           >
             Message
           </Link>
+          </div>
           <span
             className="dots"
             onClick={(e) => {
