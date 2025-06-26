@@ -1175,17 +1175,14 @@ const toggleSave = async () => {
 
 
   {/* Image (optional) */}
- { /*{getImgSrc() && (
+ {getImgSrc() && (
     <img
       src={getImgSrc()}
       alt="post"
       className="post-image"
     />
-  )}*/}
-  {post.imageUrl && post.imageUrl.startsWith('data:image') && (
-  <img src={post.imageUrl} alt="post" />
-)}
-
+  )}
+  
   <div className="tag-list">
     {post.tags?.map((tag, i) => (
       <span key={i} className="tag">#{tag}</span>

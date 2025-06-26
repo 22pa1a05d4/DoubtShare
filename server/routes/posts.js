@@ -369,26 +369,7 @@ router.get('/feed/:email', async (req, res) => {
   }
 });
 
-router.post('/create-base64', async (req, res) => {
-  try {
-    const { title, description, email, tags, imageBase64 } = req.body;
 
-    const post = new Post({
-      title,
-      description,
-      email,
-      tags: tags?.split(',').map(t => t.trim()) || [],
-      imageUrl: imageBase64 || '', // 🔥 store base64 string
-      comments: []
-    });
-
-    await post.save();
-    res.status(201).send('Post created successfully (Base64)');
-  } catch (err) {
-    console.error('Base64 post creation error:', err);
-    res.status(500).send('Server Error');
-  }
-});
 
 /* ───────────────────────────────
    ADD COMMENT  → returns new comment {user,text,createdAt}
