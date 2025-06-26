@@ -765,25 +765,74 @@ const handleRemovePhoto = async () => {
   useEffect(() => { fetchFeed(); }, []);
 
   /* ── create post ── */
-  const handleSubmitPost = async () => {
-    if (!newPost.description.trim()) return alert('Description required');
+//   const handleSubmitPost = async () => {
+//     if (!newPost.description.trim()) return alert('Description required');
 
-    const fd = new FormData();
-    fd.append('description', newPost.description);
-    if (newPost.image) fd.append('image', newPost.image);
-    fd.append('email', localStorage.getItem('userEmail'));
-    if (newPost.title) fd.append('title', newPost.title);
-  if (newPost.tags) fd.append('tags', newPost.tags); 
-  try{
-    await fetch(`${process.env.REACT_APP_API_BASE_URL}
-/api/posts/create`, { method:'POST', body:fd });
+//     const fd = new FormData();
+//     fd.append('description', newPost.description);
+//     if (newPost.image) fd.append('image', newPost.image);
+//     fd.append('email', localStorage.getItem('userEmail'));
+//     if (newPost.title) fd.append('title', newPost.title);
+//   if (newPost.tags) fd.append('tags', newPost.tags); 
+//   try{
+//     await fetch(`${process.env.REACT_APP_API_BASE_URL}
+// /api/posts/create`, { method:'POST', body:fd });
+//     setShowModal(false);
+//     setNewPost({ description:'',title: '', tags: '', image:null });
+//   }catch(error){
+//      console.error('Failed to create post', error);
+//     alert('Something went wrong. Try again.');
+//   }
+//   };
+  const handleSubmitPost = async () => {
+  if (!newPost.description.trim()) return alert('Description required');
+
+  const email = localStorage.getItem('userEmail');
+  const reader = new FileReader();
+
+  if (newPost.image) {
+    reader.onloadend = async () => {
+      const base64Image = reader.result;
+
+      const postData = {
+        title: newPost.title || '',
+        description: newPost.description,
+        email,
+        tags: newPost.tags || '',
+        imageBase64: base64Image
+      };
+
+      await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/create-base64`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(postData)
+      });
+
+      setShowModal(false);
+      setNewPost({ description:'', title:'', tags:'', image:null });
+    };
+
+    reader.readAsDataURL(newPost.image);
+  } else {
+    // If no image
+    const postData = {
+      title: newPost.title || '',
+      description: newPost.description,
+      email,
+      tags: newPost.tags || '',
+      imageBase64: ''
+    };
+
+    await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/create-base64`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(postData)
+    });
+
     setShowModal(false);
-    setNewPost({ description:'',title: '', tags: '', image:null });
-  }catch(error){
-     console.error('Failed to create post', error);
-    alert('Something went wrong. Try again.');
+    setNewPost({ description:'', title:'', tags:'', image:null });
   }
-  };
+};
 
   return (
     <div className="post-login-home">
