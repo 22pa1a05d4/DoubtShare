@@ -222,29 +222,54 @@ router.get('/saved/:email', async (req, res) => {
 //   }
 // });
 router.post('/create', upload.single('image'), async (req, res) => {
-  console.log('🔥 /create route HIT');
-  console.log('📦 Uploaded file:', req.file);
+  try {
+    console.log('🔥 /create route HIT');
+    console.log('📦 Uploaded file:', req.file);
 
-  // console.log('📦 Uploaded file:', req.file);
-  // console.log('🧭 Storage path:', req.file?.path);
-  // console.log('🧾 Full file object:', JSON.stringify(req.file, null, 2));
-  // console.log('📦 Uploaded file object:', JSON.stringify(req.file, null, 2));
+    const { title, description, email, tags } = req.body;
+    const imageUrl = req.file?.path || null;
 
-  const { title, description, email, tags } = req.body;
-  const imageUrl = req.file?.path || null;
+    const post = new Post({
+      title,
+      description,
+      email,
+      tags: tags?.split(',').map(t => t.trim()) || [],
+      imageUrl,
+      comments: [],
+    });
 
-  const post = new Post({
-    title,
-    description,
-    email,
-    tags: tags?.split(',').map(t => t.trim()) || [],
-    imageUrl,
-    comments: [],
-  });
-
-  await post.save();
-  res.status(201).send('Post created successfully!');
+    await post.save();
+    res.status(201).send('Post created successfully!');
+  } catch (err) {
+    console.error('❌ Error in /create route:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
+
+// router.post('/create', upload.single('image'), async (req, res) => {
+//   console.log('🔥 /create route HIT');
+//   console.log('📦 Uploaded file:', req.file);
+
+//   // console.log('📦 Uploaded file:', req.file);
+//   // console.log('🧭 Storage path:', req.file?.path);
+//   // console.log('🧾 Full file object:', JSON.stringify(req.file, null, 2));
+//   // console.log('📦 Uploaded file object:', JSON.stringify(req.file, null, 2));
+
+//   const { title, description, email, tags } = req.body;
+//   const imageUrl = req.file?.path || null;
+
+//   const post = new Post({
+//     title,
+//     description,
+//     email,
+//     tags: tags?.split(',').map(t => t.trim()) || [],
+//     imageUrl,
+//     comments: [],
+//   });
+
+//   await post.save();
+//   res.status(201).send('Post created successfully!');
+// });
 
 
 router.get('/isSaved/:email/:postId', async (req, res) => {
