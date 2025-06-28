@@ -1,9 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config();
-const path      = require('path');  
 
+const path      = require('path');  
+require('dotenv').config(); // For accessing environment variables
 const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/posts');
 const notifRoutes = require('./routes/notifications');
@@ -25,6 +25,10 @@ app.use('/api/posts', postRoutes);
 app.use('/api/search',searchRoutes);
 app.use('/api/notifications', notifRoutes);
 // serves files like http://localhost:5000/uploads/abc.jpg
+app.use(
+  '/uploads',
+  express.static(path.join(__dirname, 'uploads'))
+);
 
 mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,

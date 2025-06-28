@@ -113,14 +113,12 @@
 const express  = require('express');
 const router   = express.Router();
 const upload   = require('../middleware/upload');
-console.log('✅ Upload middleware loaded from:', require.resolve('../middleware/upload'));
-
 const Post     = require('../models/Post');
 const User = require('../models/User'); // ✅ Add this
 
 
 /* Helper: turn filename → public URL fragment */
-// const makeUrl = (fn) => (fn ? `/uploads/${fn}` : null);
+const makeUrl = (fn) => (fn ? `/uploads/${fn}` : null);
 
 router.post('/save/:email', async (req, res) => {
   const { email } = req.params;
@@ -180,73 +178,35 @@ router.get('/saved/:email', async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch saved posts' });
   }
 });
-// router.post('/create', upload.single('image'), async (req, res) => {
-//   console.log('req.file:', req.file);
-//   const { title, description, email, tags } = req.body;
-//   const imageUrl = req.file?.path || null; // ← Cloudinary URL
-
-//   const post = new Post({
-//     title,
-//     description,
-//     email,
-//     tags: tags?.split(',').map(t => t.trim()) || [],
-//     imageUrl,
-//     comments: [],
-//   });
-
-//   await post.save();
-//   res.status(201).send('Post created successfully!');
-// });
 
 
-// router.post('/create', upload.single('image'), async (req, res) => {
-//   try {
-//      console.log('Received:', req.body);
-//     const { title,description, email,tags } = req.body;
-//     const filename = req.file ? req.file.filename : null;
-
-//     const post = new Post({
-//       title,
-//       description,
-//       email,
-//        tags: tags?.split(',').map(t => t.trim()) || [],
-//       imageUrl: makeUrl(filename),
-//       comments: [],
-//     });
-
-//     await post.save();
-//     res.status(201).send('Post created successfully!');
-//   } catch (err) {
-//     console.error('Post creation error:', err);
-//     res.status(500).send('Server Error');
-//   }
-// });
 router.post('/create', upload.single('image'), async (req, res) => {
-  console.log('🔥 /create route HIT');
-  console.log('📦 Uploaded file:', req.file);
+  try {
+     console.log('Received:', req.body);
+    const { title,description, email,tags } = req.body;
+    const filename = req.file ? req.file.filename : null;
 
-  // console.log('📦 Uploaded file:', req.file);
-  // console.log('🧭 Storage path:', req.file?.path);
-  // console.log('🧾 Full file object:', JSON.stringify(req.file, null, 2));
-  // console.log('📦 Uploaded file object:', JSON.stringify(req.file, null, 2));
+    const post = new Post({
+      title,
+      description,
+      email,
+       tags: tags?.split(',').map(t => t.trim()) || [],
+      imageUrl: makeUrl(filename),
+      comments: [],
+    });
 
-  const { title, description, email, tags } = req.body;
-  const imageUrl = req.file?.path || null;
-
-  const post = new Post({
-    title,
-    description,
-    email,
-    tags: tags?.split(',').map(t => t.trim()) || [],
-    imageUrl,
-    comments: [],
-  });
-
-  await post.save();
-  res.status(201).send('Post created successfully!');
+    await post.save();
+    res.status(201).send('Post created successfully!');
+  } catch (err) {
+    console.error('Post creation error:', err);
+    res.status(500).send('Server Error');
+  }
 });
 
-
+/* ───────────────────────────────
+   MY POSTS
+──────────────────────────────── */
+// Check if post is saved
 router.get('/isSaved/:email/:postId', async (req, res) => {
   const { email, postId } = req.params;
   try {

@@ -775,11 +775,8 @@ const handleRemovePhoto = async () => {
     if (newPost.title) fd.append('title', newPost.title);
   if (newPost.tags) fd.append('tags', newPost.tags); 
   try{
-    console.log('🧾 FormData being sent:');
-for (let [key, value] of fd.entries()) {
-  console.log(key, value);
-}
-    await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/create`, { method:'POST', body:fd });
+    await fetch(`${process.env.REACT_APP_API_BASE_URL}
+/api/posts/create`, { method:'POST', body:fd });
     setShowModal(false);
     setNewPost({ description:'',title: '', tags: '', image:null });
   }catch(error){
